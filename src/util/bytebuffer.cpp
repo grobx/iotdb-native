@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-#include "bytebuffer.h"
+#include "../../include/util/bytebuffer.h"
 namespace iotdb {
     namespace util {
         bytebuffer::bytebuffer() {
