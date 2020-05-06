@@ -83,8 +83,15 @@ namespace iotdb {
             _bytes[_writer_index++] = buf;
         }
         void bytebuffer::write(const uint8_t *buffer, size_t siz) {
+            std::lock_guard <std::mutex> lock(_buffermutex);
+            _writer_index +=siz;
+            if (_writer_index >= _bytes.capacity()) {
+                _bytes.resize(_writer_index * 2);
+            }
+            for (int i = 0; i < siz; ++i) {
+                _bytes.push_back(buffer[i]);
+            }
         }
-
         void bytebuffer::ensure_space() {
             std::lock_guard <std::mutex> lock(_buffermutex);
             _bytes.reserve(_bytes.capacity() * 2);
