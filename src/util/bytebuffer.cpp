@@ -32,7 +32,7 @@ namespace iotdb {
         bytebuffer::bytebuffer(const std::initializer_list <uint8_t> &bytes) {
             auto dim = bytes.size();
             _bytes.reserve(dim*2);
-            std:copy(bytes.begin(), bytes.end(), _bytes);
+            std::copy(bytes.begin(), bytes.end(), _bytes);
             _writer_index=dim;
             _reader_index=0;
         }
@@ -51,27 +51,25 @@ namespace iotdb {
             return tmp;
         }
         std::vector<uint8_t> bytebuffer::read_all() {
-            if (writer_index <= _reader_index) {
+            if (_writer_index <= _reader_index) {
                 return std::vector<uint8_t>();
             }
             std::vector<uint8_t> array(_writer_index-_reader_index);
-            for (auto i = _reader_index; i <=writer_index; ++i)
-            {
+            for (auto i = _reader_index; i <=_writer_index; ++i) {
                 array.push_back(_bytes[i]);
             }
             return array;
         }
-        std::tuple<std::unique_ptr<uint8_t>, size_t> bytebuffer::read_n(size_t n){
-            if (writer_index - _reader_index > n) {
-                return std::vector<uint8_t>();
+        std::optional<std::vector<uint8_t>> bytebuffer::read_n(size_t n){
+            if (_writer_index - _reader_index > n) {
+                return {};
             }
             std::vector<uint8_t> array(n);
-            for (auto i = _reader_index; i <_reader_index+n; ++i)
-            {
+            for (auto i = _reader_index; i <_reader_index+n; ++i) {
                 array.push_back(_bytes[i]);
             }
             _reader_index+=n;
-            return std::make_tuple(std::make_unique<uint8_t>(array.data()), n)
+            return array;
         }
         void bytebuffer::write(uint8_t buf) {
             std::lock_guard <std::mutex> lock(_buffermutex);
@@ -88,7 +86,7 @@ namespace iotdb {
             if (_writer_index >= _bytes.capacity()) {
                 _bytes.resize(_writer_index * 2);
             }
-            for (int i = 0; i < siz; ++i) {
+            for (size_t i = 0; i < siz; ++i) {
                 _bytes.push_back(buffer[i]);
             }
         }
@@ -99,10 +97,10 @@ namespace iotdb {
         size_t bytebuffer::max_writable() const {
             return _bytes.capacity() - _writer_index;
         }
-        const size_t bytebuffer::size() const {
+        size_t bytebuffer::size() const {
             return _bytes.size();
         }
-        const size_t bytebuffer::capacity() const {
+        size_t bytebuffer::capacity() const {
             return _bytes.capacity();
         }
         const std::string bytebuffer::hex() const {
@@ -116,10 +114,10 @@ namespace iotdb {
             }
             return out.str();
         }
-        bool bytebuffer::operator==(const bytebuffer::bytebuffer& bytebuffer) {
+        bool bytebuffer::operator==(const iotdb::util::bytebuffer& bytebuffer) {
             return hex().compare(bytebuffer.hex()) == 0;
         }
-        uint8_t &operator[](std::size_t idx) { return _bytes[idx]; }
-        const uint8_t &operator[](std::size_t idx) const { return _bytes[idx]; }
+        uint8_t& bytebuffer::operator[](std::size_t idx) { return _bytes[idx]; }
+        const uint8_t&  bytebuffer::operator[](std::size_t idx) const { return _bytes[idx]; }
     }
 }

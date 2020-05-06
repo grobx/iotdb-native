@@ -20,13 +20,17 @@
 #define IOTDB_NATIVE_BYTEBUFFER_H
 #include <vector>
 #include <cstdlib>
+#include <cstdint>
 #include <mutex>
 #include <utility>
 #include <string>
 #include <algorithm>
+#include <sstream>
+#include <memory>
 
 namespace iotdb {
     namespace util {
+
         /**
         * bytebuffer is a thread safe class for a random and sequential accessible sequence of zero or more bytes (octets).
         * The design is based on netty's bytebuf. We use two indexes:
@@ -34,7 +38,7 @@ namespace iotdb {
         * 2. WriterIndex
         */
         class bytebuffer {
-            std::vector <uint8_t> _bytes;
+            std::vector<uint8_t> _bytes;
             size_t _reader_index = 0;
             size_t _writer_index = 0;
             std::mutex _buffermutex;
@@ -78,7 +82,7 @@ namespace iotdb {
              * @param n number of bytes to read
              * @return a tuple containing a pointer to the data and the real number of bytes read
              */
-            std::tuple<std::unique_ptr<uint8_t>, size_t> read_n(size_t n);
+            std::optional<std::vector<uint8_t>> read_n(size_t n);
 
             /**
              * Write a single byte
@@ -99,17 +103,17 @@ namespace iotdb {
              * Fetch the max number of bytes
              * @return number of bytes
              */
-            const size_t max_writable() const;
+            size_t max_writable() const;
             /**
              * Get the size of the byte buffer
              * @return size in byte of the buffer
              */
-            const size_t size() const;
+            size_t size() const;
             /**
              * Get the real capacitty of the buffer
              * @return
              */
-            const size_t capacity() const;
+            size_t capacity() const;
             /**
              * Get the bytes converted in hexadecimal string
              * @return hexdecimal string of the bytebuffer
