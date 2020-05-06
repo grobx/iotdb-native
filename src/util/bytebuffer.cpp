@@ -29,10 +29,10 @@ namespace iotdb {
             _reader_index = n / 16;
             _writer_index = n / 2;
         }
-        bytebuffer::bytebuffer(const std::initializer_list <uint8_t> &bytes) {
-            auto dim = bytes.size();
+        bytebuffer::bytebuffer(const std::initializer_list <uint8_t> &l) {
+            auto dim = l.size();
             _bytes.reserve(dim*2);
-            std::copy(bytes.begin(), bytes.end(), _bytes);
+            _bytes.insert(_bytes.end(), l.begin(), l.end());
             _writer_index=dim;
             _reader_index=0;
         }

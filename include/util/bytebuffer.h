@@ -44,6 +44,12 @@ namespace iotdb {
             std::mutex _buffermutex;
             const size_t DEFAULT_SIZE = 256;
         public:
+            typedef std::vector<uint8_t> internal_buffer;
+            typedef uint8_t value_type;
+            typedef internal_buffer::iterator iterator;
+            typedef internal_buffer::const_iterator const_iterator;
+            iterator begin() { return _bytes.begin(); }
+            iterator end() { return _bytes.end(); }
             /**
              * default constructor
              */
