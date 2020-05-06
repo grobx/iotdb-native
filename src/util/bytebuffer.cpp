@@ -31,9 +31,10 @@ namespace iotdb {
         }
         bytebuffer::bytebuffer(const std::initializer_list <uint8_t> &bytes) {
             auto dim = bytes.size();
-            _bytes.reserve(dim);
-            std:
-            copy(bytes.begin(), bytes.end(), _bytes);
+            _bytes.reserve(dim*2);
+            std:copy(bytes.begin(), bytes.end(), _bytes);
+            _writer_index=dim;
+            _reader_index=0;
         }
         void bytebuffer::discard_bytes() {
             _writer_index -= _reader_index;
@@ -50,7 +51,7 @@ namespace iotdb {
             return tmp;
         }
         std::vector<uint8_t> bytebuffer::read_all() {
-            if (writer_index < _reader_index) {
+            if (writer_index <= _reader_index) {
                 return std::vector<uint8_t>();
             }
             std::vector<uint8_t> array(_writer_index-_reader_index);
@@ -60,14 +61,30 @@ namespace iotdb {
             }
             return array;
         }
+        std::tuple<std::unique_ptr<uint8_t>, size_t> bytebuffer::read_n(size_t n){
+            if (writer_index - _reader_index > n) {
+                return std::vector<uint8_t>();
+            }
+            std::vector<uint8_t> array(n);
+            for (auto i = _reader_index; i <_reader_index+n; ++i)
+            {
+                array.push_back(_bytes[i]);
+            }
+            _reader_index+=n;
+            return std::make_tuple(std::make_unique<uint8_t>(array.data()), n)
+        }
         void bytebuffer::write(uint8_t buf) {
             std::lock_guard <std::mutex> lock(_buffermutex);
             if (_writer_index >= _bytes.capacity()) {
                 auto capacity = _bytes.capacity();
                 _bytes.resize(capacity * 2);
             }
+            _writer_index+=1;
             _bytes[_writer_index++] = buf;
         }
+        void bytebuffer::write(const uint8_t *buffer, size_t siz) {
+        }
+
         void bytebuffer::ensure_space() {
             std::lock_guard <std::mutex> lock(_buffermutex);
             _bytes.reserve(_bytes.capacity() * 2);
@@ -80,9 +97,6 @@ namespace iotdb {
         }
         const size_t bytebuffer::capacity() const {
             return _bytes.capacity();
-        }
-        const std::vector <uint8_t> bytebuffer::bytes() const {
-            return _bytes;
         }
         const std::string bytebuffer::hex() const {
             const char code[]{"0123456789ABCDEF"};
