@@ -92,7 +92,7 @@ namespace iotdb {
              * @param s buffer to put the data
              * @param n number of items
              */
-            void read(char* s, streamsize n);
+            void read(char* s, std::streamsize n);
             /**
              *
              * @param c
