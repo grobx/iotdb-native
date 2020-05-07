@@ -25,9 +25,27 @@
 
 namespace iotdb {
     namespace bconv {
-        int64_t to_int(iotdb::vbytes bytes) {
+        int16_t to_short(iotdb::vbytes bytes) {
+            int16_t s = 0;
+            int16_t s0 = (int16_t) (bytes[1] & 0xff);
+            int16_t s1 = (int16_t) (bytes[0] & 0xff);
+            s1 <<= 8;
+            s = (int16_t) (s0 | s1);
+            return s;
+        }
+
+        int32_t to_int(iotdb::vbytes bytes) {
             return (bytes[3] & 0xFF)
                 | (bytes[2] & 0xFF) << 8 | (bytes[1] & 0xFF) << 16 | (bytes[0] & 0xFF) << 24;
+        }
+
+        int64_t to_long(iotdb::vbytes bytes, int len) {
+            int64_t num = 0;
+            for (int ix = 0; ix < len; ix++) {
+                num <<= 8;
+                num |= (bytes[ix] & 0xff);
+            }
+            return num;
         }
 
         std::string to_string(iotdb::vbytes bytes) {

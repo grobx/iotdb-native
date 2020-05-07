@@ -33,7 +33,8 @@ namespace iotdb {
         constexpr std::size_t FLOAT_LEN = 4;
 
         template<typename InputStream>
-        std::optional<bool> read_bool(InputStream *bstream) {
+        std::optional<bool>
+        read_bool(InputStream *bstream) {
             std::optional<iotdb::vbytes> res = bstream->read_n(BOOL_LEN);
             if (!res) {
                 return {};
@@ -42,7 +43,18 @@ namespace iotdb {
         }
 
         template<typename InputStream>
-        std::optional<int64_t> read_int(InputStream *bstream) {
+        std::optional<int16_t>
+        read_short(InputStream *bstream) {
+            std::optional<iotdb::vbytes> res = bstream->read_n(SHORT_LEN);
+            if (!res) {
+                return {};
+            }
+            return bconv::to_short(res.value());
+        }
+
+        template<typename InputStream>
+        std::optional<int32_t>
+        read_int(InputStream *bstream) {
             std::optional<iotdb::vbytes> res = bstream->read_n(INT_LEN);
             if (!res) {
                 return {};
@@ -51,8 +63,19 @@ namespace iotdb {
         }
 
         template<typename InputStream>
-        std::optional<std::string> read_string(InputStream *bstream) {
-            std::optional<std::size_t> len = read_int(bstream);
+        std::optional<int64_t>
+        read_long(InputStream *bstream) {
+            std::optional<iotdb::vbytes> res = bstream->read_n(LONG_LEN);
+            if (!res) {
+                return {};
+            }
+            return bconv::to_long(res.value(), LONG_LEN);
+        }
+
+        template<typename InputStream>
+        std::optional<std::string>
+        read_string(InputStream *bstream) {
+            std::optional<int32_t> len = read_int(bstream);
             std::optional<iotdb::vbytes> res = bstream->read_n(len.value_or(-1));
             if (!res) {
                 return {};

@@ -23,10 +23,10 @@
 using namespace iotdb;
 
 SCENARIO( "rwio can read bool", "[rwio]" ) {
-    GIVEN( "a buffer stream with {1} contents" ) {
+    GIVEN( "a buffer stream with content: {1}" ) {
         iotdb::util::bytebuffer bstream({1});
 
-        WHEN( "we read the integer from buffer stream" ) {
+        WHEN( "we read a bool from buffer stream" ) {
             std::optional<bool> x = rwio::read_bool(&bstream);
 
             THEN( "the bool true is returned" ) {
@@ -38,7 +38,7 @@ SCENARIO( "rwio can read bool", "[rwio]" ) {
     GIVEN( "a buffer stream with no content" ) {
         iotdb::util::bytebuffer bstream({});
 
-        WHEN( "we read the bool from buffer stream" ) {
+        WHEN( "we read a bool from buffer stream" ) {
             std::optional<int64_t> x = rwio::read_bool(&bstream);
 
             THEN_NO_VALUE_IN(x);
@@ -46,12 +46,36 @@ SCENARIO( "rwio can read bool", "[rwio]" ) {
     }
 }
 
+SCENARIO( "rwio can read short", "[rwio]" ) {
+    GIVEN( "a buffer stream with content: {2,1}" ) {
+        iotdb::util::bytebuffer bstream({2,1});
+
+        WHEN( "we read a short from buffer stream" ) {
+            std::optional<int16_t> x = rwio::read_short(&bstream);
+
+            THEN( "the number 0x201 is returned" ) {
+                REQUIRE( 0x201 == x.value() );
+            }
+        }
+    }
+
+    GIVEN( "a buffer stream with no enough content" ) {
+        iotdb::util::bytebuffer bstream({1});
+
+        WHEN( "we read a short from buffer stream" ) {
+            std::optional<int16_t> x = rwio::read_short(&bstream);
+
+            THEN_NO_VALUE_IN(x);
+        }
+    }
+}
+
 SCENARIO( "rwio can read integer", "[rwio]" ) {
-    GIVEN( "a buffer stream with {4,3,2,1} contents" ) {
+    GIVEN( "a buffer stream with content: {4,3,2,1}" ) {
         iotdb::util::bytebuffer bstream({4,3,2,1});
 
-        WHEN( "we read the integer from buffer stream" ) {
-            std::optional<int64_t> x = rwio::read_int(&bstream);
+        WHEN( "we read an integer from buffer stream" ) {
+            std::optional<int32_t> x = rwio::read_int(&bstream);
 
             THEN( "the number 0x4030201 is returned" ) {
                 REQUIRE( 0x4030201 == x.value() );
@@ -62,8 +86,32 @@ SCENARIO( "rwio can read integer", "[rwio]" ) {
     GIVEN( "a buffer stream with no enough content" ) {
         iotdb::util::bytebuffer bstream({3,2,1});
 
-        WHEN( "we read the integer from buffer stream" ) {
-            std::optional<int64_t> x = rwio::read_int(&bstream);
+        WHEN( "we read an integer from buffer stream" ) {
+            std::optional<int32_t> x = rwio::read_int(&bstream);
+
+            THEN_NO_VALUE_IN(x);
+        }
+    }
+}
+
+SCENARIO( "rwio can read long", "[rwio]" ) {
+    GIVEN( "a buffer stream with content: {8,7,6,5,4,3,2,1}" ) {
+        iotdb::util::bytebuffer bstream({8,7,6,5,4,3,2,1});
+
+        WHEN( "we read a long from buffer stream" ) {
+            std::optional<int64_t> x = rwio::read_long(&bstream);
+
+            THEN( "the number 0x807060504030201 is returned" ) {
+                REQUIRE( 0x807060504030201 == x.value() );
+            }
+        }
+    }
+
+    GIVEN( "a buffer stream with no enough content" ) {
+        iotdb::util::bytebuffer bstream({7,6,5,4,3,2,1});
+
+        WHEN( "we read the long from buffer stream" ) {
+            std::optional<int64_t> x = rwio::read_long(&bstream);
 
             THEN_NO_VALUE_IN(x);
         }
@@ -71,13 +119,13 @@ SCENARIO( "rwio can read integer", "[rwio]" ) {
 }
 
 SCENARIO( "rwio can read string", "[rwio]" ) {
-    GIVEN( "a buffer stream with string contents" ) {
+    GIVEN( "a buffer stream with content: {0,0,0,5,'i','o','t','d','b'}" ) {
         iotdb::util::bytebuffer bstream({0,0,0,5,'i','o','t','d','b'});
 
-        WHEN( "we read the string from buffer stream" ) {
+        WHEN( "we read a string from buffer stream" ) {
             std::optional<std::string> x = rwio::read_string(&bstream);
 
-            THEN( "the string 'hello iotdb' is returned" ) {
+            THEN( "the string 'iotdb' is returned" ) {
                 REQUIRE( std::string("iotdb") == x.value() );
             }
         }
@@ -86,7 +134,7 @@ SCENARIO( "rwio can read string", "[rwio]" ) {
     GIVEN( "a buffer stream with no enough content (1)" ) {
         iotdb::util::bytebuffer bstream({3,2,1});
 
-        WHEN( "we read the string from buffer stream" ) {
+        WHEN( "we read a string from buffer stream" ) {
             std::optional<std::string> x = rwio::read_string(&bstream);
 
             THEN_NO_VALUE_IN(x);
@@ -96,7 +144,7 @@ SCENARIO( "rwio can read string", "[rwio]" ) {
     GIVEN( "a buffer stream with no enough content (2)" ) {
         iotdb::util::bytebuffer bstream({0,0,0,2,'x'});
 
-        WHEN( "we read the string from buffer stream" ) {
+        WHEN( "we read a string from buffer stream" ) {
             std::optional<std::string> x = rwio::read_string(&bstream);
 
             THEN_NO_VALUE_IN(x);
