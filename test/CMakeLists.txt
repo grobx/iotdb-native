@@ -12,7 +12,7 @@ endif()
 set(IOTDB_SOURCES ${MAINFOLDER}/src/util/bytebuffer.cpp)
 add_library(catch_lib ${MAINFOLDER}/test/tests-main.cpp)
 
-add_executable(test01-bytebuffer 01-bytebuffer.cpp ${IOTDB_SOURCES})
+add_executable(test01-bytebuffer util/01-bytebuffer.cpp ${IOTDB_SOURCES})
 set_target_properties(test01-bytebuffer PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests")
 target_link_libraries(test01-bytebuffer ${LINK_DEPENDENCIES})
 add_test("Should_Init_ByteBuffer" test01-bytebuffer)

@@ -12,7 +12,7 @@
 * limitations under the License.
 **/
 
-#include "catch.hpp"
+#include "../catch.hpp"
 #include <string>
 #include <utility>
 #include <util/bytebuffer.h>
