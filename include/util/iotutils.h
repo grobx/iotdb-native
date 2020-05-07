@@ -24,19 +24,48 @@
 
 namespace iotdb {
     namespace util {
-        namespace io {
-            typedef union {
-                char bytes[4];
-                int32_t int_value;
-            } bytes2int;
+            struct concept buffered_data {
 
-            std::string read_string(istream &stream) {
+            };
+            template <typename T> class readerwriter {
+                typedef union {
+                    char bytes[4];
+                    int32_t int_value;
+                } bytes2int;
+                static std::string read_string(T& data) {
+                }
+                static int read_int(T& data) {
+                    bytes2int tmp;
+                    data.read(tmp.bytes, 4);
+                    return data.int_value;
+                }
+                static bool read_bool(T& data) {
+                    char a;
+                    data.get(&a)
+                    return a == 1;
+                }
+                static char read_byte()
+                /**
+                 * read a byte from byteBuffer.
+                 */
+            public static byte readByte(ByteBuffer buffer) {
+                    return buffer.get();
+                }
 
-            }
+                /**
+                 * read bytes array in given size
+                 *
+                 * @param buffer buffer
+                 * @param size size
+                 * @return bytes array
+                 */
+            public static byte[] readBytes(ByteBuffer buffer, int size) {
+                    byte[] res = new byte[size];
+                    buffer.get(res);
+                    return res;
+                }
 
-            int read_int(istream &stream) {
-            }
-        }
+            };
     }
 }
 #endif

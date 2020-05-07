@@ -20,33 +20,24 @@
 #ifndef IOTDB_NATIVE_CHUNK_HEADER_H
 #define IOTDB_NATIVE_CHUNK_HEADER_H
 #include <iostream>
+#include <concept>
+
 namespace iotdb {
     namespace tsfile {
         namespace file {
             namespace header {
+                const int8_t CHUNK_MARKER =
                 std::unique_ptr<chunk_header> make_chunk_header(const istream& stream, bool marker_read) {
                     if (!marker_read) {
                         char marker;
                         stream.get(&marker)
-                        uint8_t m = static_cast<uint8_t>(marker);
-                        if (marker != MetaMarker.CHUNK_HEADER) {
-                            MetaMarker.handleUnexpectedMarker(marker);
-                        }
                     }
-                    String measurementID = ReadWriteIOUtils.readString(inputStream);
-                    int dataSize = ReadWriteIOUtils.readInt(inputStream);
-                    TSDataType dataType = TSDataType.deserialize(ReadWriteIOUtils.readShort(inputStream));
-                    int numOfPages = ReadWriteIOUtils.readInt(inputStream);
-                    CompressionType type = ReadWriteIOUtils.readCompressionType(inputStream);
-                    TSEncoding encoding = ReadWriteIOUtils.readEncoding(inputStream);
-                    return new ChunkHeader(measurementID, dataSize, dataType, type, encoding, numOfPages);
                 }
                 std::unique_ptr<chunk_header> make_chunk_header(const iotdb::util::bytebuffer& buffer) {
                 }
                 std::unique_ptr<chunk_header> make_chunk_header(const uint8_t* data, size_t n) {
                 }
                 class chunk_header {
-
                 };
             }
 

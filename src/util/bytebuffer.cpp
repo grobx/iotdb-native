@@ -40,7 +40,15 @@ namespace iotdb {
             _writer_index -= _reader_index;
             _reader_index = 0;
         }
+        void bytebuffer::read(char* s, streamsize n) {
+            auto data = read_n(n);
+            std::memcpy(s, data.data(), n);
+        }
 
+        void bytebuffer::get (char& c) {
+            auto v = read();
+            c = static_cast<char>(c);
+        }
         bool bytebuffer::is_readable() const {
             return (_reader_index <= _writer_index);
         }
