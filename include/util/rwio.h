@@ -19,11 +19,6 @@
 #include "util/bconv.h"
 
 namespace iotdb {
-    template<typename InputStream>
-    struct is_buffer_stream {
-        constexpr static bool value = InputStream::is_buffer_stream;
-    };
-
     namespace serializer {
         constexpr std::size_t SHORT_LEN = 2;
         constexpr std::size_t INT_LEN = 4;
@@ -32,15 +27,12 @@ namespace iotdb {
         constexpr std::size_t FLOAT_LEN = 4;
 
         template<typename InputStream>
-        typename std::enable_if<iotdb::is_buffer_stream<InputStream>::value, int64_t>::type
-        read_int(InputStream *bstream) noexcept(false) {
-            std::tuple<iotdb::vbytes, std::size_t> res = bstream->readn(INT_LEN);
-            iotdb::vbytes bytes = std::get<0>(res);
-            std::size_t size = std::get<1>(res);
-            if (size != INT_LEN) {
+        int64_t read_int(InputStream *bstream) noexcept(false) {
+            std::optional<std::vector<uint8_t>> res = bstream->read_n(INT_LEN);
+            if (!res) {
                 throw new std::exception();
             }
-            return bconv::to_int(bytes);
+            return bconv::to_int(res.value());
         }
     }
 }

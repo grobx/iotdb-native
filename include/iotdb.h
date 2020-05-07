@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <vector>
 #include <tuple>
+#include <optional>
 
 namespace iotdb {
     using vbytes = std::vector<uint8_t>;

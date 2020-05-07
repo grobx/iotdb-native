@@ -17,7 +17,7 @@ set_target_properties(test01-bytebuffer PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${C
 target_link_libraries(test01-bytebuffer ${LINK_DEPENDENCIES})
 add_test("Should_Init_ByteBuffer" test01-bytebuffer)
 
-add_executable(rwio util/rwio.cpp)
+add_executable(rwio util/rwio.cpp ${IOTDB_SOURCES})
 target_link_libraries(rwio Catch2::Catch2)
 
 include(CTest)

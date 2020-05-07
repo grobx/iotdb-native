@@ -20,24 +20,13 @@
 #include <catch2/catch.hpp>
 
 #include "util/rwio.h"
+#include "util/bytebuffer.h"
 
 using namespace iotdb;
 
-class fake_buffer_stream {
-  iotdb::vbytes _buff;
-
-public:
-  constexpr static bool is_buffer_stream = true;
-  fake_buffer_stream(iotdb::vbytes buff) : _buff{buff} {}
-  std::tuple<iotdb::vbytes, std::size_t> readn(std::size_t n) {
-    return std::make_tuple(_buff, n);
-  }
-};
-
-SCENARIO( "serializer can read things", "[serializer]" ) {
+SCENARIO( "rwio can read integer", "[rwio]" ) {
   GIVEN( "a buffer stream with {4,3,2,1} contents" ) {
-    iotdb::vbytes buff = {4,3,2,1};
-    fake_buffer_stream bstream(buff);
+    iotdb::util::bytebuffer bstream({4,3,2,1});
 
     WHEN( "we read the integer from buffer stream" ) {
       uint64_t x = serializer::read_int(&bstream);
