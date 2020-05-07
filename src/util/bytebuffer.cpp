@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-#include "../../include/util/bytebuffer.h"
+#include "util/bytebuffer.h"
 namespace iotdb {
     namespace util {
         bytebuffer::bytebuffer() {
@@ -61,7 +61,7 @@ namespace iotdb {
             return array;
         }
         std::optional<std::vector<uint8_t>> bytebuffer::read_n(size_t n){
-            if (_writer_index - _reader_index > n) {
+            if (_writer_index - _reader_index < n) {
                 return {};
             }
             std::vector<uint8_t> array;

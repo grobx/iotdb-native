@@ -19,7 +19,7 @@
 #include "util/bconv.h"
 
 namespace iotdb {
-    namespace serializer {
+    namespace rwio {
         constexpr std::size_t SHORT_LEN = 2;
         constexpr std::size_t INT_LEN = 4;
         constexpr std::size_t LONG_LEN = 8;
@@ -30,7 +30,7 @@ namespace iotdb {
         int64_t read_int(InputStream *bstream) noexcept(false) {
             std::optional<std::vector<uint8_t>> res = bstream->read_n(INT_LEN);
             if (!res) {
-                throw new std::exception();
+                throw std::exception();
             }
             return bconv::to_int(res.value());
         }
