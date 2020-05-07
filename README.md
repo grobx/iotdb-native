@@ -32,8 +32,11 @@ Monthly we do a release process. We freeze dev and we do testing for a week than
 ### How to Commit Code into the Repository
 
 - Choose a repository where you shall develop, for example rocket-s3, and clone it. You must start adding from branch dev, otherwise the continuous integration system will not work.
+
 `$ git clone https://github.com/giorgiozoppi/iotdb-native`
+
 `$ git checkout dev`
+
 - Create a new branch, possibly specifying the GitHub ticket where the necessity of the added feature/fix was originated:
 
 `$ git checkout -b IOTDB-tsfile-encoder`
