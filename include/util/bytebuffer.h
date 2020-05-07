@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <sstream>
 #include <memory>
+#include <optional>
 
 namespace iotdb {
     namespace util {
