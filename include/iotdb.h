@@ -16,11 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+#ifndef IOTDB_NATIVE_H
+#define IOTDB_NATIVE_H
+
 #include <stdint.h>
 #include <vector>
 #include <tuple>
-#include <optional>
 
 namespace iotdb {
     using vbytes = std::vector<uint8_t>;
 }
+
+#endif // IOTDB_NATIVE_H

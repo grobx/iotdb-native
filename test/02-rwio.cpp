@@ -19,27 +19,29 @@
 using namespace iotdb;
 
 SCENARIO( "rwio can read integer", "[rwio]" ) {
-  GIVEN( "a buffer stream with {4,3,2,1} contents" ) {
-    iotdb::util::bytebuffer bstream({4,3,2,1});
+    GIVEN( "a buffer stream with {4,3,2,1} contents" ) {
+        iotdb::util::bytebuffer bstream({4,3,2,1});
 
-    WHEN( "we read the integer from buffer stream" ) {
-      int64_t x = rwio::read_int(&bstream);
+        WHEN( "we read the integer from buffer stream" ) {
+            std::optional<int64_t> x = rwio::read_int(&bstream);
 
-      THEN( "the number 0x4030201 is returned" ) {
-        REQUIRE( 0x4030201 == x );
-      }
+            THEN( "the number 0x4030201 is returned" ) {
+                REQUIRE( 0x4030201 == x.value() );
+            }
+        }
     }
-  }
 }
 
 SCENARIO( "rwio will throw an exception if buffer is not enough", "[rwio]" ) {
-  GIVEN( "a buffer stream with no enough content" ) {
-    iotdb::util::bytebuffer bstream({3,2,1});
+    GIVEN( "a buffer stream with no enough content" ) {
+        iotdb::util::bytebuffer bstream({3,2,1});
 
-    WHEN( "we read the integer from buffer stream" ) {
-      THEN( "an exception will be thrown" ) {
-        REQUIRE_THROWS_AS( rwio::read_int(&bstream), std::exception );
-      }
+        WHEN( "we read the integer from buffer stream" ) {
+            std::optional<int64_t> x = rwio::read_int(&bstream);
+
+            THEN( "no integer will be returned" ) {
+                REQUIRE( !x.has_value() );
+            }
+        }
     }
-  }
 }

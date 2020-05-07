@@ -16,6 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+#ifndef IOTDB_NATIVE_BCONV_H
+#define IOTDB_NATIVE_BCONV_H
+
 #include "iotdb.h"
 
 namespace iotdb {
@@ -26,3 +29,5 @@ namespace iotdb {
         }
     }
 }
+
+#endif // IOTDB_NATIVE_BCONV_H

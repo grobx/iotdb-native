@@ -16,6 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+#ifndef IOTDB_NATIVE_RWIO_H
+#define IOTDB_NATIVE_RWIO_H
+
+#include <optional>
+
 #include "util/bconv.h"
 
 namespace iotdb {
@@ -27,12 +32,14 @@ namespace iotdb {
         constexpr std::size_t FLOAT_LEN = 4;
 
         template<typename InputStream>
-        int64_t read_int(InputStream *bstream) noexcept(false) {
+        std::optional<int64_t> read_int(InputStream *bstream) {
             std::optional<std::vector<uint8_t>> res = bstream->read_n(INT_LEN);
             if (!res) {
-                throw std::exception();
+                return {};
             }
             return bconv::to_int(res.value());
         }
     }
 }
+
+#endif // IOTDB_NATIVE_RWIO_H
