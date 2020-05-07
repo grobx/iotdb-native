@@ -22,6 +22,30 @@
 
 using namespace iotdb;
 
+SCENARIO( "rwio can read bool", "[rwio]" ) {
+    GIVEN( "a buffer stream with {1} contents" ) {
+        iotdb::util::bytebuffer bstream({1});
+
+        WHEN( "we read the integer from buffer stream" ) {
+            std::optional<bool> x = rwio::read_bool(&bstream);
+
+            THEN( "the bool true is returned" ) {
+                REQUIRE( true == x.value() );
+            }
+        }
+    }
+
+    GIVEN( "a buffer stream with no content" ) {
+        iotdb::util::bytebuffer bstream({});
+
+        WHEN( "we read the bool from buffer stream" ) {
+            std::optional<int64_t> x = rwio::read_bool(&bstream);
+
+            THEN_NO_VALUE_IN(x);
+        }
+    }
+}
+
 SCENARIO( "rwio can read integer", "[rwio]" ) {
     GIVEN( "a buffer stream with {4,3,2,1} contents" ) {
         iotdb::util::bytebuffer bstream({4,3,2,1});
