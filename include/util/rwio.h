@@ -38,7 +38,7 @@ namespace iotdb {
 
         template<typename InputStream>
         int64_t read_int(InputStream &bstream) noexcept(false) {
-            std::optional <std::vector<uint8_t>> res = bstream.read_n(INT_LEN);
+            auto res = bstream.read_n(INT_LEN);
             if (!res) {
                 throw new std::exception();
             }
@@ -47,9 +47,9 @@ namespace iotdb {
 
         template<typename InputStream>
         std::optional <std::string> read_string(InputStream &bstream) noexcept(false) {
-            int strLength = read_int(bstream);
+            auto strLength = read_int(bstream);
             auto bytes = std::make_unique<char[]>(strLength);
-            int readLen = bstream.read(bytes, strLength);
+            auto readLen = bstream.read(bytes, strLength);
             if (readLen != strLength) {
                 return {};
             }
