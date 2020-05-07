@@ -35,8 +35,10 @@ Monthly we do a release process. We freeze dev and we do testing for a week than
 `$ git clone https://github.com/giorgiozoppi/iotdb-native`
 `$ git checkout dev`
 - Create a new branch, possibly specifying the GitHub ticket where the necessity of the added feature/fix was originated:
+
 `$ git checkout -b IOTDB-tsfile-encoder`
 - Add and/or modify files, committing them to the local branch when time arises:
+
 `$ git commit -a -m "Added encoder file support"`
 - Then push modifications upstream:
 
