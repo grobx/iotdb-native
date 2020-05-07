@@ -22,9 +22,9 @@
 #include <bytebuffer.h>
 #include <cstdint>
 #include <system_error>
+#include <metadata.h>
 
-struct ts_datatype {
-};
+
 struct statistics {
 };
 

@@ -31,11 +31,11 @@ add_library(iotdb ${IOTDB_SOURCES})
 set(LINK_DEPENDENCIES ${LINK_DEPENDENCIES} iotdb)
 add_library(catch_lib ${MAINFOLDER}/test/tests-main.cpp)
 
-add_executable(test01-bytebuffer 01-bytebuffer.cpp)
+add_executable(test01-bytebuffer util/01-bytebuffer.cpp)
 target_link_libraries(test01-bytebuffer ${LINK_DEPENDENCIES})
 add_test("Should_Init_ByteBuffer" test01-bytebuffer)
 
-add_executable(test02-rwio 02-rwio.cpp)
+add_executable(test02-rwio util/02-rwio.cpp)
 target_link_libraries(test02-rwio ${LINK_DEPENDENCIES})
 add_test("Should_Read" test02-rwio)
 

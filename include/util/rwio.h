@@ -22,6 +22,7 @@
 #include <optional>
 
 #include "util/bconv.h"
+#include <string>
 
 namespace iotdb {
     namespace rwio {

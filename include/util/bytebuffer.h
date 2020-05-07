@@ -49,7 +49,15 @@ namespace iotdb {
             typedef uint8_t value_type;
             typedef internal_buffer::iterator iterator;
             typedef internal_buffer::const_iterator const_iterator;
+            /**
+             * forward iterator in the buffer
+             * @return an interator
+             */
             iterator begin() { return _bytes.begin(); }
+            /**
+             * iterator in the buffer
+             * @return
+             */
             iterator end() { return _bytes.end(); }
             /**
              * default constructor
@@ -79,6 +87,17 @@ namespace iotdb {
              * @return byte read from the buffer
              */
             uint8_t read();
+            /**
+             * read n elements and places than to a buffer
+             * @param s buffer to put the data
+             * @param n number of items
+             */
+            void read(char* s, std::streamsize n);
+            /**
+             *
+             * @param c
+             */
+            void get (char& c);
             /**
              * Read all bytes
              * @return a list of bytes
