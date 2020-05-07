@@ -12,9 +12,13 @@
 * limitations under the License.
 **/
 
+#include <iostream>
+
 #include "catch.hpp"
 #include "util/rwio.h"
 #include "util/bytebuffer.h"
+
+#define THEN_NO_VALUE_IN(expr) THEN( "no value will be returned" ) { REQUIRE( !expr.has_value() ); }
 
 using namespace iotdb;
 
@@ -30,18 +34,48 @@ SCENARIO( "rwio can read integer", "[rwio]" ) {
             }
         }
     }
-}
 
-SCENARIO( "rwio will throw an exception if buffer is not enough", "[rwio]" ) {
     GIVEN( "a buffer stream with no enough content" ) {
         iotdb::util::bytebuffer bstream({3,2,1});
 
         WHEN( "we read the integer from buffer stream" ) {
             std::optional<int64_t> x = rwio::read_int(&bstream);
 
-            THEN( "no integer will be returned" ) {
-                REQUIRE( !x.has_value() );
+            THEN_NO_VALUE_IN(x);
+        }
+    }
+}
+
+SCENARIO( "rwio can read string", "[rwio]" ) {
+    GIVEN( "a buffer stream with string contents" ) {
+        iotdb::util::bytebuffer bstream({0,0,0,5,'i','o','t','d','b'});
+
+        WHEN( "we read the string from buffer stream" ) {
+            std::optional<std::string> x = rwio::read_string(&bstream);
+
+            THEN( "the string 'hello iotdb' is returned" ) {
+                REQUIRE( std::string("iotdb") == x.value() );
             }
+        }
+    }
+
+    GIVEN( "a buffer stream with no enough content (1)" ) {
+        iotdb::util::bytebuffer bstream({3,2,1});
+
+        WHEN( "we read the string from buffer stream" ) {
+            std::optional<std::string> x = rwio::read_string(&bstream);
+
+            THEN_NO_VALUE_IN(x);
+        }
+    }
+
+    GIVEN( "a buffer stream with no enough content (2)" ) {
+        iotdb::util::bytebuffer bstream({0,0,0,2,'x'});
+
+        WHEN( "we read the string from buffer stream" ) {
+            std::optional<std::string> x = rwio::read_string(&bstream);
+
+            THEN_NO_VALUE_IN(x);
         }
     }
 }

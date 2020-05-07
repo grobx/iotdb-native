@@ -39,6 +39,16 @@ namespace iotdb {
             }
             return bconv::to_int(res.value());
         }
+
+        template<typename InputStream>
+        std::optional<std::string> read_string(InputStream *bstream) {
+            std::optional<std::size_t> len = read_int(bstream);
+            std::optional<std::vector<uint8_t>> res = bstream->read_n(len.value_or(-1));
+            if (!res) {
+                return {};
+            }
+            return bconv::to_string(res.value());
+        }
     }
 }
 

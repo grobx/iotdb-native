@@ -61,7 +61,7 @@ namespace iotdb {
             return array;
         }
         std::optional<std::vector<uint8_t>> bytebuffer::read_n(size_t n){
-            if (_writer_index - _reader_index < n) {
+            if (n < 0 || _writer_index - _reader_index < n) {
                 return {};
             }
             std::vector<uint8_t> array;

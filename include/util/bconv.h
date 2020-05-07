@@ -19,6 +19,8 @@
 #ifndef IOTDB_NATIVE_BCONV_H
 #define IOTDB_NATIVE_BCONV_H
 
+#include <string>
+
 #include "iotdb.h"
 
 namespace iotdb {
@@ -26,6 +28,10 @@ namespace iotdb {
         int64_t to_int(iotdb::vbytes bytes) {
             return (bytes[3] & 0xFF)
                 | (bytes[2] & 0xFF) << 8 | (bytes[1] & 0xFF) << 16 | (bytes[0] & 0xFF) << 24;
+        }
+
+        std::string to_string(iotdb::vbytes bytes) {
+            return std::string(bytes.begin(), bytes.end());
         }
     }
 }
