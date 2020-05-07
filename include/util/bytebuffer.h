@@ -24,6 +24,7 @@
 #include <mutex>
 #include <utility>
 #include <string>
+#include <cstring>
 #include <algorithm>
 #include <sstream>
 #include <memory>
