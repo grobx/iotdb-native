@@ -200,3 +200,57 @@ SCENARIO( "rwio can read string", "[rwio]" ) {
         }
     }
 }
+
+SCENARIO( "rwio can read int list", "[rwio]" ) {
+    GIVEN( "a buffer stream with content: {0,0,0,2,8,7,6,5,4,3,2,1}" ) {
+        iotdb::util::bytebuffer bstream({0,0,0,2,8,7,6,5,4,3,2,1});
+
+        WHEN( "we read an int list from buffer stream" ) {
+            std::optional<std::vector<int32_t>> x =
+                rwio::read_int_list(&bstream);
+
+            THEN( "the list {0x8070605,0x4030201} is returned" ) {
+                REQUIRE( std::vector({0x8070605,0x4030201}) == x.value() );
+            }
+        }
+    }
+
+    GIVEN( "a buffer stream with content: {0,0,0,0}" ) {
+        iotdb::util::bytebuffer bstream({0,0,0,0});
+
+        WHEN( "we read an int list from buffer stream" ) {
+            std::optional<std::vector<int32_t>> x =
+                rwio::read_int_list(&bstream);
+
+            THEN( "the list is empty" ) {
+                REQUIRE( 0 == x.value().size() );
+            }
+        }
+    }
+}
+
+SCENARIO( "rwio can read string list", "[rwio]" ) {
+    GIVEN( "a buffer stream with content: {0,0,0,2,0,0,0,3,'i','o','t',0,0,0,2,'d','b'}" ) {
+        iotdb::util::bytebuffer bstream({0,0,0,2,0,0,0,3,'i','o','t',0,0,0,2,'d','b'});
+
+        WHEN( "we read a string list from buffer stream" ) {
+            std::vector<std::string> x = rwio::read_string_list(&bstream);
+
+            THEN( "the list {'iot','db'} is returned" ) {
+                REQUIRE( std::vector({std::string("iot"), std::string("db")}) == x );
+            }
+        }
+    }
+
+    GIVEN( "a buffer stream with content: {0,0,0,0}" ) {
+        iotdb::util::bytebuffer bstream({0,0,0,0});
+
+        WHEN( "we read a string list from buffer stream" ) {
+            std::vector<std::string> x = rwio::read_string_list(&bstream);
+
+            THEN( "the list is empty" ) {
+                REQUIRE( 0 == x.size() );
+            }
+        }
+    }
+}

@@ -20,9 +20,10 @@
 #define IOTDB_NATIVE_RWIO_H
 
 #include <optional>
-
-#include "util/bconv.h"
 #include <string>
+
+#include "iotdb.h"
+#include "util/bconv.h"
 
 namespace iotdb {
     namespace rwio {
@@ -108,7 +109,68 @@ namespace iotdb {
 
         /**( READ ENUMS )**/
 
+        template<typename InputStream>
+        std::optional<compression_type>
+        read_compression_type(InputStream *bstream) {
+            std::optional<int16_t> res = read_short(bstream);
+            if (!res) {
+                return {};
+            }
+            return (compression_type)res.value();
+        }
+
+        template<typename InputStream>
+        std::optional<data_type>
+        read_data_type(InputStream *bstream) {
+            std::optional<int16_t> res = read_short(bstream);
+            if (!res) {
+                return {};
+            }
+            return (data_type)res.value();
+        }
+
+        template<typename InputStream>
+        std::optional<encoding_type>
+        read_encoding_type(InputStream *bstream) {
+            std::optional<int16_t> res = read_short(bstream);
+            if (!res) {
+                return {};
+            }
+            return (encoding_type)res.value();
+        }
+
         /**( READ CONTAINERS )**/
+
+        template<typename InputStream>
+        std::vector<int32_t>
+        read_int_list(InputStream *bstream) {
+            int16_t len = read_int(bstream).value_or(0);
+            if (len <= 0) {
+                return {};
+            }
+            std::vector<int32_t> res;
+            res.reserve(len);
+            for (int i=0; i<len; ++i) {
+                res.push_back(read_int(bstream).value());
+            }
+            return res;
+        }
+
+        template<typename InputStream>
+        std::vector<std::string>
+        read_string_list(InputStream *bstream) {
+            int16_t len = read_int(bstream).value_or(0);
+            if (len <= 0) {
+                return {};
+            }
+            std::vector<std::string> res;
+            res.reserve(len);
+            for (int i=0; i<len; ++i) {
+                res.push_back(read_string(bstream).value());
+            }
+            return res;
+        }
+
     }
 }
 

@@ -25,6 +25,18 @@
 
 namespace iotdb {
     using vbytes = std::vector<uint8_t>;
+
+    enum compression_type {
+        UNCOMPRESSED, SNAPPY, GZIP, LZO, SDT, PAA, PLA
+    };
+
+    enum data_type {
+        BOOLEAN, INT32, INT64, FLOAT, DOUBLE, TEXT
+    };
+
+    enum encoding_type {
+        PLAIN, PLAIN_DICTIONARY, RLE, DIFF, TS_2DIFF, BITMAP, GORILLA, REGULAR
+    };
 }
 
 #endif // IOTDB_NATIVE_H
