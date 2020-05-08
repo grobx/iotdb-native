@@ -12,6 +12,7 @@
 * limitations under the License.
 **/
 
+#include <cmath>
 #include <iostream>
 
 #include "../catch.hpp"
@@ -110,8 +111,56 @@ SCENARIO( "rwio can read long", "[rwio]" ) {
     GIVEN( "a buffer stream with no enough content" ) {
         iotdb::util::bytebuffer bstream({7,6,5,4,3,2,1});
 
-        WHEN( "we read the long from buffer stream" ) {
+        WHEN( "we read a long from buffer stream" ) {
             std::optional<int64_t> x = rwio::read_long(&bstream);
+
+            THEN_NO_VALUE_IN(x);
+        }
+    }
+}
+
+SCENARIO( "rwio can read float", "[rwio]" ) {
+    GIVEN( "a buffer stream with content: {64,73,15,219}" ) {
+        iotdb::util::bytebuffer bstream({64, 73, 15, 219});
+
+        WHEN( "we read a float from buffer stream" ) {
+            std::optional<float_t> x = rwio::read_float(&bstream);
+
+            THEN( "the number Pi is returned" ) {
+                REQUIRE( Approx( M_PI ) == x.value() );
+            }
+        }
+    }
+
+    GIVEN( "a buffer stream with no enough content" ) {
+        iotdb::util::bytebuffer bstream({0});
+
+        WHEN( "we read a float from buffer stream" ) {
+            std::optional<float_t> x = rwio::read_float(&bstream);
+
+            THEN_NO_VALUE_IN(x);
+        }
+    }
+}
+
+SCENARIO( "rwio can read double", "[rwio]" ) {
+    GIVEN( "a buffer stream with content: {64,9,33,251,84,68,45,24}" ) {
+        iotdb::util::bytebuffer bstream({64, 9, 33, 251, 84, 68, 45, 24});
+
+        WHEN( "we read a double from buffer stream" ) {
+            std::optional<double_t> x = rwio::read_double(&bstream);
+
+            THEN( "the number Pi is returned" ) {
+                REQUIRE( Approx( M_PI ) == x.value() );
+            }
+        }
+    }
+
+    GIVEN( "a buffer stream with no enough content" ) {
+        iotdb::util::bytebuffer bstream({0});
+
+        WHEN( "we read a float from buffer stream" ) {
+            std::optional<double_t> x = rwio::read_double(&bstream);
 
             THEN_NO_VALUE_IN(x);
         }

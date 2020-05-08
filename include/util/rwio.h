@@ -33,6 +33,8 @@ namespace iotdb {
         constexpr std::size_t DOUBLE_LEN = 8;
         constexpr std::size_t FLOAT_LEN = 4;
 
+        /**( READ BASE TYPES )**/
+
         template<typename InputStream>
         std::optional<bool>
         read_bool(InputStream *bstream) {
@@ -74,6 +76,26 @@ namespace iotdb {
         }
 
         template<typename InputStream>
+        std::optional<float_t>
+        read_float(InputStream *bstream) {
+            std::optional<iotdb::vbytes> res = bstream->read_n(FLOAT_LEN);
+            if (!res) {
+                return {};
+            }
+            return bconv::to_float(res.value());
+        }
+
+        template<typename InputStream>
+        std::optional<double_t>
+        read_double(InputStream *bstream) {
+            std::optional<iotdb::vbytes> res = bstream->read_n(DOUBLE_LEN);
+            if (!res) {
+                return {};
+            }
+            return bconv::to_double(res.value());
+        }
+
+        template<typename InputStream>
         std::optional<std::string>
         read_string(InputStream *bstream) {
             std::optional<int32_t> len = read_int(bstream);
@@ -83,6 +105,10 @@ namespace iotdb {
             }
             return bconv::to_string(res.value());
         }
+
+        /**( READ ENUMS )**/
+
+        /**( READ CONTAINERS )**/
     }
 }
 

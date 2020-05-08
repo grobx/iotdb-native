@@ -48,6 +48,18 @@ namespace iotdb {
             return num;
         }
 
+        float_t to_float(iotdb::vbytes bytes) {
+            float_t f;
+            std::copy(bytes.rbegin(), bytes.rend(), (uint8_t*) &f);
+            return f;
+        }
+
+        double_t to_double(iotdb::vbytes bytes) {
+            double_t d;
+            std::copy(bytes.rbegin(), bytes.rend(), (uint8_t*) &d);
+            return d;
+        }
+
         std::string to_string(iotdb::vbytes bytes) {
             return std::string(bytes.begin(), bytes.end());
         }
