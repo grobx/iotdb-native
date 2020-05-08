@@ -20,9 +20,15 @@
 #define IOTDB_NATIVE_RWIO_H
 
 #include <optional>
-
-#include "util/bconv.h"
 #include <string>
+
+#include "tsfile/file/metadata/metadata.h"
+#include "util/bytebuffer.h"
+#include "util/bconv.h"
+
+#include <iostream>
+
+using namespace iotdb::tsfile::file::metadata;
 
 namespace iotdb {
     namespace rwio {
@@ -33,55 +39,51 @@ namespace iotdb {
         constexpr std::size_t DOUBLE_LEN = 8;
         constexpr std::size_t FLOAT_LEN = 4;
 
-        template<typename InputStream>
-        std::optional<bool>
-        read_bool(InputStream *bstream) {
-            std::optional<iotdb::vbytes> res = bstream->read_n(BOOL_LEN);
+        /**( READ BASE TYPES )**/
+
+        template<typename Tp = bool, typename InputStream>
+        std::optional<Tp>
+        read(InputStream *bstream) {
+            int32_t len;
+            if (std::is_same_v<Tp, std::string>) {
+                len = read<int32_t>(bstream).value_or(-1);
+            } else {
+                len = sizeof(Tp);
+            }
+            std::optional<iotdb::vbytes> res = bstream->read_n(len);
             if (!res) {
                 return {};
             }
-            return res.value()[0] == 1u;
+            return bconv::to<Tp>(res.value());
         }
 
-        template<typename InputStream>
-        std::optional<int16_t>
-        read_short(InputStream *bstream) {
-            std::optional<iotdb::vbytes> res = bstream->read_n(SHORT_LEN);
+        /**( READ ENUMS )**/
+
+        template<typename Tp, typename InputStream>
+        std::optional<Tp>
+        read_enum(InputStream *bstream) {
+            std::optional<int16_t> res = read<int16_t>(bstream);
             if (!res) {
                 return {};
             }
-            return bconv::to_short(res.value());
+            return static_cast<Tp>(res.value());
         }
 
-        template<typename InputStream>
-        std::optional<int32_t>
-        read_int(InputStream *bstream) {
-            std::optional<iotdb::vbytes> res = bstream->read_n(INT_LEN);
-            if (!res) {
-                return {};
-            }
-            return bconv::to_int(res.value());
-        }
+        /**( READ CONTAINERS )**/
 
-        template<typename InputStream>
-        std::optional<int64_t>
-        read_long(InputStream *bstream) {
-            std::optional<iotdb::vbytes> res = bstream->read_n(LONG_LEN);
-            if (!res) {
+        template<typename Tp, typename InputStream>
+        std::vector<Tp>
+        read_list(InputStream *bstream) {
+            int32_t len = read<int32_t>(bstream).value_or(0);
+            if (len <= 0) {
                 return {};
             }
-            return bconv::to_long(res.value(), LONG_LEN);
-        }
-
-        template<typename InputStream>
-        std::optional<std::string>
-        read_string(InputStream *bstream) {
-            std::optional<int32_t> len = read_int(bstream);
-            std::optional<iotdb::vbytes> res = bstream->read_n(len.value_or(-1));
-            if (!res) {
-                return {};
+            std::vector<Tp> res;
+            res.reserve(len);
+            for (int i=0; i<len; ++i) {
+                res.push_back(read<Tp>(bstream).value());
             }
-            return bconv::to_string(res.value());
+            return res;
         }
     }
 }
