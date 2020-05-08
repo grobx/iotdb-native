@@ -22,8 +22,10 @@
 #include <optional>
 #include <string>
 
-#include "iotdb.h"
+#include "tsfile/file/metadata/metadata.h"
 #include "util/bconv.h"
+
+using namespace iotdb::tsfile::file::metadata;
 
 namespace iotdb {
     namespace rwio {
@@ -120,23 +122,23 @@ namespace iotdb {
         }
 
         template<typename InputStream>
-        std::optional<data_type>
+        std::optional<ts_datatype>
         read_data_type(InputStream *bstream) {
             std::optional<int16_t> res = read_short(bstream);
             if (!res) {
                 return {};
             }
-            return (data_type)res.value();
+            return (ts_datatype)res.value();
         }
 
         template<typename InputStream>
-        std::optional<encoding_type>
+        std::optional<ts_encoding>
         read_encoding_type(InputStream *bstream) {
             std::optional<int16_t> res = read_short(bstream);
             if (!res) {
                 return {};
             }
-            return (encoding_type)res.value();
+            return (ts_encoding)res.value();
         }
 
         /**( READ CONTAINERS )**/
