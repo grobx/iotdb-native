@@ -74,7 +74,7 @@ namespace iotdb {
             if (n < zero || _writer_index - _reader_index < n) {
                 return {};
             }
-            std::vector<uint8_t> array;
+            std::vector<T> array;
             array.reserve(n);
             for (auto i = _reader_index; i <_reader_index+n; ++i) {
                 array.push_back(_bytes[i]);
