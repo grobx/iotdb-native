@@ -26,8 +26,8 @@ else()
     set(LINK_DEPENDENCIES pthread catch_lib ) #  asan ubsan
 endif()
 set(LINK_DEPENDENCIES ${LINK_DEPENDENCIES})
-message(STATUS ${MAINFOLDER})
 add_library(catch_lib ${MAINFOLDER}/test/tests-main.cpp)
+
 
 
 add_executable(test01-bytebuffer util/01-bytebuffer.cpp)
