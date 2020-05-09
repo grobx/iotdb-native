@@ -39,8 +39,8 @@ namespace iotdb {
         * 1. ReaderIndex
         * 2. WriterIndex
         */
-        class bytebuffer {
-            std::vector<uint8_t> _bytes;
+        template <typename T> class basic_bytebuffer {
+            std::vector<T> _bytes;
             size_t _reader_index = 0;
             size_t _writer_index = 0;
             std::mutex _buffermutex;
@@ -73,7 +73,7 @@ namespace iotdb {
              * construct a byte array of predefined size using uniform init
              * @param n number of bytes that a bytearray should have
              */
-            bytebuffer(const std::initializer_list<uint8_t>& bytes);
+            bytebuffer(const std::initializer_list<T>& bytes);
             /**
              * discard all files that has been read.
              */
@@ -103,25 +103,25 @@ namespace iotdb {
              * Read all bytes
              * @return a list of bytes
              */
-            std::vector<uint8_t> read_all();
+            std::vector<T> read_all();
             /**
              * Read at most n bytes
              * @param n number of bytes to read
              * @return a tuple containing a pointer to the data and the real number of bytes read
              */
-            std::optional<std::vector<uint8_t>> read_n(size_t n);
+            std::optional<std::vector<T>> read_n(size_t n);
 
             /**
              * Write a single byte
              * @param buf byte to write
              */
-            void write(uint8_t buf);
+            void write(T buf);
             /**
              * Write a buffer of bytes
              * @param buffer buffer of bytes to be written
              * @param siz    size of the array
              */
-            void write(const uint8_t *buffer, size_t siz);
+            void write(const T *buffer, size_t siz);
             /**
              * Double the reserved size for the byte buffer
              */
@@ -155,14 +155,16 @@ namespace iotdb {
              * @param idx index of the byte
              * @return value of the byte
              */
-            uint8_t &operator[](std::size_t idx);
+            T &operator[](std::size_t idx);
             /**
              * Return the byte by random access
              * @param idx index of the byte
              * @return value of the byte
              */
-            const uint8_t &operator[](std::size_t idx) const;
+            const T &operator[](std::size_t idx) const;
         };
+        typedef basic_bytebuffer<int8_t> bytebuffer;
+        typedef basic_bytebuffer<int8_t> ubytebuffer;
     }
 }
 #endif //IOTDB_NATIVE_BYTEBUFFER_H

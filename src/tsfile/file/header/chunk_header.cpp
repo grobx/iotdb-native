@@ -58,14 +58,13 @@ namespace iotdb {
                  */
                 size_t chunk_header::to_buffer(iotdb::util::bytebuffer &buffer) {
                     size_t length = 0;
-                    length += ReadWriteIOUtils.write(MetaMarker.CHUNK_HEADER, outputStream);
-                    length += ReadWriteIOUtils.write(measurementID, outputStream);
-                    length += ReadWriteIOUtils.write(dataSize, outputStream);
-                    length += ReadWriteIOUtils.write(dataType, outputStream);
-                    length += ReadWriteIOUtils.write(numOfPages, outputStream);
-                    length += ReadWriteIOUtils.write(compressionType, outputStream);
-                    length += ReadWriteIOUtils.write(encodingType, outputStream);
-                    return size_t;
+                    length+=rwio::write(iotb::tsfile::file::CHUNK_HEADER, buffer);
+                    length+=rwio::write<std::string>(_measurement_id,buffer);
+                    length+=rwio::write<int>(_data_size,buffer);
+                    length+=rwio::write<int8_t>(_datatype,buffer);
+                    length+=rwio::write<int8_t>(_compression_type, buffer);
+                    length+=rwio::write<int>(_num_of_pages, buffer);
+                    return lenght;
                 }
 
                 /**
@@ -148,11 +147,13 @@ namespace iotdb {
                     _number_of_pages = num_of_pages;
                 }
                 /**
-                 * Return a hexadecimal representation of the chunkheader
-                 * @return
+                 * Convert an buffer to a string
+                 * @return convert the current buffer to a string
                  */
                 std::string chunk_header::str() const {
-
+                    iotdb::util::bytebuffer buffer(1024);
+                    to_buffer(buffer);
+                    return buffer.hex();
                 }
             }
         }

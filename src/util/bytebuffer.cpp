@@ -20,46 +20,46 @@
 #include "util/bytebuffer.h"
 namespace iotdb {
     namespace util {
-        bytebuffer::bytebuffer() {
+        template <typename T> basic_bytebuffer<T>::basic_bytebuffer() {
             _bytes.reserve(256);
             _reader_index = 16;
             _writer_index = 128;
         }
-        bytebuffer::bytebuffer(size_t n) {
+        template <typename T> basic_bytebuffer<T>::basic_bytebuffer(size_t n) {
             _bytes.reserve(n);
             _reader_index = n / 16;
             _writer_index = n / 2;
         }
-        bytebuffer::bytebuffer(const std::initializer_list <uint8_t> &l) {
+        template <typename T> basic_bytebuffer::basic_bytebuffer(const std::initializer_list <T> &l) {
             auto dim = l.size();
             _bytes.reserve(dim*2);
             _bytes.insert(_bytes.end(), l.begin(), l.end());
             _writer_index=dim;
             _reader_index=0;
         }
-        void bytebuffer::discard_bytes() {
+        template <typename T> void basic_bytebuffer<T>::discard_bytes() {
             _writer_index -= _reader_index;
             _reader_index = 0;
         }
-        void bytebuffer::read(char* s, std::streamsize n) {
+        template <typename T> void basic_bytebuffer<T>::read(char* s, std::streamsize n) {
             auto data = read_n(n);
             std::memcpy(s, data->data(), n);
         }
 
-        void bytebuffer::get (char& c) {
+        template <typename T> void basic_bytebuffer<T>::get (char& c) {
             auto v = read();
             c = static_cast<char>(v);
         }
-        bool bytebuffer::is_readable() const {
+        template <typename T> bool basic_bytebuffer<T>::is_readable() const {
             return (_reader_index <= _writer_index);
         }
-        uint8_t bytebuffer::read() {
+        template <typename T> uint8_t basic_bytebuffer<T>::read() {
             std::lock_guard <std::mutex> lock(_buffermutex);
             auto tmp = _bytes[_reader_index];
             _reader_index++;
             return tmp;
         }
-        std::vector<uint8_t> bytebuffer::read_all() {
+        template <typename T> std::vector<uint8_t> basic_bytebuffer<T>::read_all() {
             if (_writer_index <= _reader_index) {
                 return std::vector<uint8_t>();
             }
@@ -69,6 +69,7 @@ namespace iotdb {
             }
             return array;
         }
+        template <typename T> std::optional<std::vector<uint8_t>>::
         std::optional<std::vector<uint8_t>> bytebuffer::read_n(size_t n){
             const size_t zero = 0;
             if (n < zero || _writer_index - _reader_index < n) {
