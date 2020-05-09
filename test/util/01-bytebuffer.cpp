@@ -14,11 +14,11 @@
 
 #include "../catch.hpp"
 #include <util/bytebuffer.h>
-using namespace iotdb;
+using namespace iotdb::util;
 
 SCENARIO( "ByteBuffer should be initialized correctly", "[bytebuffer]" ) {
     GIVEN("a bytebuffer with predefined values") {
-        iotdb::util::bytebuffer buffer{1, 25, 32};
+        bytebuffer buffer{1,25,32};
         WHEN( "we get value by index" ) {
             auto pos1 = buffer[0];
             auto pos2 = buffer[1];

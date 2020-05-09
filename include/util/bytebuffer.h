@@ -68,7 +68,7 @@ namespace iotdb {
              * construct a byte array of predefined size
              * @param n number of bytes that a bytearray should have
              */
-            basic_bytebuffer(size_t n);
+            explicit basic_bytebuffer(size_t n);
             /**
              * construct a byte array of predefined size using uniform init
              * @param n number of bytes that a bytearray should have
@@ -167,4 +167,5 @@ namespace iotdb {
         typedef basic_bytebuffer<uint8_t> ubytebuffer;
     }
 }
+#include "../../src/util/bytebuffer.cpp"
 #endif //IOTDB_NATIVE_BYTEBUFFER_H

@@ -78,5 +78,5 @@ if(CMAKE_COMPILER_IS_GNUCXX)
             )
 endif()
 ### Configurations ###
-
+include_directories(${MAINFOLDER}/include)
 add_subdirectory(test)

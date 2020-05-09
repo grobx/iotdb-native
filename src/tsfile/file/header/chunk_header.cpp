@@ -82,7 +82,6 @@ namespace iotdb {
                 void chunk_header::set_measurement_id(const std::string &id) const {
                     _measurement_id = id;
                 }
-
                 /**
                  * Get the compression type
                  * @return Type of the compression.
