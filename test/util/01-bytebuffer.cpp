@@ -24,10 +24,11 @@ SCENARIO( "ByteBuffer should be initialized correctly", "[bytebuffer]" ) {
         WHEN( "we get value by index" ) {
             auto pos1 = buffer[0];
             auto pos2 = buffer[1];
+            auto pos3 = buffer[2];
             THEN( "the bool true is returned" ) {
                 REQUIRE( 1 == pos1 );
                 REQUIRE( 255 == pos2 );
-                REQUIRE( 32 == pos1 );
+                REQUIRE( 32 == pos3);
             }
         }
     }

@@ -23,6 +23,8 @@
 #include <iostream>
 #include <concept>
 #include <metadata.h>
+#include <util/rwio.h>
+
 
 namespace iotdb {
     namespace tsfile {
@@ -84,6 +86,7 @@ namespace iotdb {
                 };
                 ostream& operator<<(ostream& os, const chunk_header& header)
                 {
+
                     /*
                       length += ReadWriteIOUtils.write(MetaMarker.CHUNK_HEADER, outputStream);
                       length += ReadWriteIOUtils.write(measurementID, outputStream);

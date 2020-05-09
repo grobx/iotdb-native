@@ -279,7 +279,6 @@ SCENARIO( "rwio can read string list", "[rwio]" ) {
 
     GIVEN( "a buffer stream with content: {0,0,0,0}" ) {
         iotdb::util::bytebuffer bstream({0,0,0,0});
-
         WHEN( "we read a string list from buffer stream" ) {
             std::vector<std::string> x =
                 rwio::read_list<std::string>(&bstream);
