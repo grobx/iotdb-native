@@ -16,10 +16,19 @@
 #include <string>
 #include <utility>
 #include <util/bytebuffer.h>
-TEST_CASE( "ByteBuffer should be initialized correctly", "[bytebuffer]" ) {
-    iotdb::util::bytebuffer buffer{1, 255, 32};
-    REQUIRE( buffer.size() == 3 );
-    REQUIRE(buffer[0] == 1);
-    REQUIRE(buffer[1] == 255);
-    REQUIRE(buffer[2] == 32);
+using namespace iotdb;
+
+SCENARIO( "ByteBuffer should be initialized correctly", "[bytebuffer]" ) {
+    GIVEN("a bytebuffer with predefined values") {
+        iotdb::util::bytebuffer buffer{1, 255, 32};
+        WHEN( "we get value by index" ) {
+            auto pos1 = buffer[0];
+            auto pos2 = buffer[1];
+            THEN( "the bool true is returned" ) {
+                REQUIRE( 1 == pos1 );
+                REQUIRE( 255 == pos2 );
+                REQUIRE( 32 == pos1 );
+            }
+        }
+    }
 }

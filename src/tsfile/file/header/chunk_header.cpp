@@ -26,21 +26,16 @@ namespace iotdb {
             namespace header {
 
                 using namespace iotdb::tsfile::file::metadata;
-
                 /**
-                         * Class that holds the responsibility to model a chunk header
-                         */
-
-                /**
-                         * Construct a chunk header
-                         * @param measurementID     id of measurement
-                         * @param dataSize          size of the data
-                         * @param headerSize        size of the header
-                         * @param dataType          type of the data
-                         * @param compressionType   type of compression
-                         * @param encoding          type of encoding
-                         * @param numOfPages        numeber of pages
-                         */
+                 * Construct a chunk header
+                 * @param measurementID     id of measurement
+                 * @param dataSize          size of the data
+                 * @param headerSize        size of the header
+                 * @param dataType          type of the data
+                 * @param compressionType   type of compression
+                 * @param encoding          type of encoding
+                 * @param numOfPages        numeber of pages
+                 */
                 chunk_header::chunk_header(std::string measurementID,
                                            int dataSize,
                                            int headerSize,
@@ -55,42 +50,86 @@ namespace iotdb {
                                                             _num_of_pages(numOfPages){
                 }
 
-                size_t chunk_header::to_buffer(bytebuffer &buffer) {
-
+                /**
+                 *  Serialize the chunk data to a buffer
+                 * @param buffer buffer containins the bytes
+                 * @return the dimension of the buffer.
+                 */
+                size_t chunk_header::to_buffer(iotdb::util::bytebuffer &buffer) {
                 }
-
+                /**
+                 * Get the measurement id
+                 * @return  identifier fo the measurement
+                 */
                 std::string chunk_header::get_measurement_id() const {
                     return _measurement_id;
                 }
-
+                /**
+                 * Set measurement id.
+                 * @param id identifier of measurement
+                 */
                 void chunk_header::set_measurement_id(const std::string &id) const {
                     _measurement_id = id;
                 }
-
+                /**
+                 * Get the compression type
+                 * @return Type of the compression.
+                 */
                 compression_type chunk_header::get_compression_type() const {
                     return _compression_type;
                 }
-
-                void chunk_header::
-                set_compression_type(const compression_type &type) const {
+                /**
+                 * Set the type of the compression
+                 * @param type type of the compression
+                 */
+                void chunk_header::set_compression_type(const compression_type &type) const {
                     _compression_type = type;
                 }
-
+                /**
+                 * Get the time series type
+                 * @return a time serie type.
+                 */
                 ts_datatype chunk_header::get_ts_datatype() const {
+                        return _datatype;
+                }
+                /**
+                 * Ser the timeseries datatype
+                 * @param type datatype
+                 */
+                void chunk_header::set_ts_datatype(const ts_datatype &type) const {
+                        _datatype = type;
+                }
+                /**
+                 * Return the encoding of time serie encoding
+                 * @return time serie encoding
+                 */
+                ts_encoding chunk_header::get_ts_encoding() const  {
+                        return _encoding_type;
+                }
+                /**
+                 * Set the time series encoding
+                 * @param type encoding of the time serie
+                 */
+                void chunk_header::set_ts_encoding(const ts_encoding &type) const {
+                        _encoding_type = type;
+                }
+                /**
+                 * Get the number of pages
+                 * @return number of pages
+                 */
+                int chunk_header::get_num_of_pages() const {
+                       return _number_of_pages;
+                }
+                /**
+                 * Set the number of pages
+                 * @param num_of_pages number of pages.
+                 */
+                void chunk_header::set_num_of_pages(const int &num_of_pages) {
+                    _number_of_pages = num_of_pages;
+                }
+                std::string chunk_header::str() const {
 
                 }
-
-                void chunk_header::set_ts_datatype(const ts_datatype &type) const;
-
-                ts_encoding chunk_header::get_ts_encoding() const;
-
-                void chunk_header::set_ts_encoding(const ts_encoding &type) const;
-
-                int chunk_header::get_num_of_pages() const;
-
-                void chunk_header::set_num_of_pages(const int &num_of_pages);
-
-                std::string chunk_header::str() const;
             }
         }
     }
