@@ -61,7 +61,7 @@ namespace iotdb {
 
         template<typename Tp, typename InputStream>
         std::optional <Tp>
-        read_enum(InputStream &bstream) {
+        read_enum(InputStream& bstream) {
             std::optional <int16_t> res = read<int16_t>(bstream);
             if (!res) {
                 return {};
@@ -87,7 +87,16 @@ namespace iotdb {
         }
 
         template<typename InputStream> std::string read_string(InputStream& bstream) {
-
+            int32_t len = read<int32_t>(bstream).value_or(0);
+            if (len <= 0) {
+                return {};
+            }
+            std::string res;
+            res.reserve(len);
+            for (int i = 0; i < len; ++i) {
+                res.push_back(read<char>(bstream).value());
+            }
+            return res;
         }
     }
 }

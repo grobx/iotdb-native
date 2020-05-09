@@ -46,10 +46,10 @@ namespace iotdb {
             std::mutex _buffermutex;
             const size_t DEFAULT_SIZE = 256;
         public:
-            typedef std::vector<uint8_t> internal_buffer;
-            typedef uint8_t value_type;
-            typedef internal_buffer::iterator iterator;
-            typedef internal_buffer::const_iterator const_iterator;
+            typedef typename std::vector<T> internal_buffer;
+            typedef T value_type;
+            typedef typename internal_buffer::iterator iterator;
+            typedef typename internal_buffer::const_iterator const_iterator;
             /**
              * forward iterator in the buffer
              * @return an interator
@@ -63,17 +63,17 @@ namespace iotdb {
             /**
              * default constructor
              */
-            bytebuffer();
+            basic_bytebuffer();
             /**
              * construct a byte array of predefined size
              * @param n number of bytes that a bytearray should have
              */
-            bytebuffer(size_t n);
+            basic_bytebuffer(size_t n);
             /**
              * construct a byte array of predefined size using uniform init
              * @param n number of bytes that a bytearray should have
              */
-            bytebuffer(const std::initializer_list<T>& bytes);
+            basic_bytebuffer(const std::initializer_list<T>& bytes);
             /**
              * discard all files that has been read.
              */
@@ -149,7 +149,7 @@ namespace iotdb {
             /**
              * Compare if two byte buffers are the same
              */
-            bool operator==(const bytebuffer &bytebuffer);
+            bool operator==(const basic_bytebuffer<T> &bytebuffer);
             /**
              * Return the byte by random access
              * @param idx index of the byte
@@ -164,7 +164,7 @@ namespace iotdb {
             const T &operator[](std::size_t idx) const;
         };
         typedef basic_bytebuffer<int8_t> bytebuffer;
-        typedef basic_bytebuffer<int8_t> ubytebuffer;
+        typedef basic_bytebuffer<uint8_t> ubytebuffer;
     }
 }
 #endif //IOTDB_NATIVE_BYTEBUFFER_H

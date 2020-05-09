@@ -30,7 +30,7 @@ namespace iotdb {
             _reader_index = n / 16;
             _writer_index = n / 2;
         }
-        template <typename T> basic_bytebuffer::basic_bytebuffer(const std::initializer_list <T> &l) {
+        template <typename T> basic_bytebuffer<T>::basic_bytebuffer(const std::initializer_list <T> &l) {
             auto dim = l.size();
             _bytes.reserve(dim*2);
             _bytes.insert(_bytes.end(), l.begin(), l.end());
@@ -59,18 +59,17 @@ namespace iotdb {
             _reader_index++;
             return tmp;
         }
-        template <typename T> std::vector<uint8_t> basic_bytebuffer<T>::read_all() {
+        template <typename T> std::vector<T> basic_bytebuffer<T>::read_all() {
             if (_writer_index <= _reader_index) {
-                return std::vector<uint8_t>();
+                return std::vector<T >();
             }
-            std::vector<uint8_t> array(_writer_index-_reader_index);
+            std::vector<T> array(_writer_index-_reader_index);
             for (auto i = _reader_index; i <=_writer_index; ++i) {
                 array.push_back(_bytes[i]);
             }
             return array;
         }
-        template <typename T> std::optional<std::vector<uint8_t>>::
-        std::optional<std::vector<uint8_t>> bytebuffer::read_n(size_t n){
+        template <typename T> std::optional<std::vector<T>> basic_bytebuffer<T>::read_n(size_t n){
             const size_t zero = 0;
             if (n < zero || _writer_index - _reader_index < n) {
                 return {};
@@ -83,7 +82,7 @@ namespace iotdb {
             _reader_index+=n;
             return array;
         }
-        void bytebuffer::write(uint8_t buf) {
+        template <typename T> void basic_bytebuffer<T>::write(T buf) {
             std::lock_guard <std::mutex> lock(_buffermutex);
             if (_writer_index >= _bytes.capacity()) {
                 auto capacity = _bytes.capacity();
@@ -92,7 +91,7 @@ namespace iotdb {
             _writer_index+=1;
             _bytes[_writer_index++] = buf;
         }
-        void bytebuffer::write(const uint8_t *buffer, size_t siz) {
+        template <typename T> void basic_bytebuffer<T>::write(const T *buffer, size_t siz) {
             std::lock_guard <std::mutex> lock(_buffermutex);
             _writer_index +=siz;
             if (_writer_index >= _bytes.capacity()) {
@@ -102,20 +101,20 @@ namespace iotdb {
                 _bytes.push_back(buffer[i]);
             }
         }
-        void bytebuffer::ensure_space() {
+        template <typename T> void basic_bytebuffer<T>::ensure_space() {
             std::lock_guard <std::mutex> lock(_buffermutex);
             _bytes.reserve(_bytes.capacity() * 2);
         }
-        size_t bytebuffer::max_writable() const {
+        template <typename T> size_t basic_bytebuffer<T>::max_writable() const {
             return _bytes.capacity() - _writer_index;
         }
-        size_t bytebuffer::size() const {
+        template <typename T> size_t basic_bytebuffer<T>::size() const {
             return _bytes.size();
         }
-        size_t bytebuffer::capacity() const {
+        template <typename T> size_t basic_bytebuffer<T>::capacity() const {
             return _bytes.capacity();
         }
-        const std::string bytebuffer::hex() const {
+        template <typename T> const std::string basic_bytebuffer<T>::hex() const {
             const char code[]{"0123456789ABCDEF"};
             std::ostringstream out;
             for (auto &b : _bytes) {
@@ -126,10 +125,10 @@ namespace iotdb {
             }
             return out.str();
         }
-        bool bytebuffer::operator==(const iotdb::util::bytebuffer& bytebuffer) {
+        template <typename T> bool basic_bytebuffer<T>::operator==(const iotdb::util::basic_bytebuffer<T>& bytebuffer) {
             return hex().compare(bytebuffer.hex()) == 0;
         }
-        uint8_t& bytebuffer::operator[](std::size_t idx) { return _bytes[idx]; }
-        const uint8_t&  bytebuffer::operator[](std::size_t idx) const { return _bytes[idx]; }
+        template <typename T>  T& basic_bytebuffer<T>::operator[](std::size_t idx) { return _bytes[idx]; }
+        template <typename T> const T&  basic_bytebuffer<T>::operator[](std::size_t idx) const { return _bytes[idx]; }
     }
 }

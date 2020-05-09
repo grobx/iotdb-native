@@ -24,7 +24,7 @@
 #include <tuple>
 
 namespace iotdb {
-    using vbytes = std::vector<uint8_t>;
+    using vbytes = std::vector<int8_t>;
 }
 
 #endif // IOTDB_NATIVE_H

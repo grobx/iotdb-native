@@ -13,21 +13,19 @@
 **/
 
 #include "../catch.hpp"
-#include <string>
-#include <utility>
 #include <util/bytebuffer.h>
 using namespace iotdb;
 
 SCENARIO( "ByteBuffer should be initialized correctly", "[bytebuffer]" ) {
     GIVEN("a bytebuffer with predefined values") {
-        iotdb::util::bytebuffer buffer{1, 255, 32};
+        iotdb::util::bytebuffer buffer{1, 25, 32};
         WHEN( "we get value by index" ) {
             auto pos1 = buffer[0];
             auto pos2 = buffer[1];
             auto pos3 = buffer[2];
             THEN( "the bool true is returned" ) {
                 REQUIRE( 1 == pos1 );
-                REQUIRE( 255 == pos2 );
+                REQUIRE( 25 == pos2 );
                 REQUIRE( 32 == pos3);
             }
         }
