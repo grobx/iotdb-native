@@ -37,7 +37,7 @@ class sequence_reader {
     tsfile _tsfile_input;
     int32_t _metadata_size;
     std::size_t _metadata_pos;
-    endian_type _endian_type = IOTDB_BIG_ENDIAN;
+    endian_type_e _endian_type = IOTDB_BIG_ENDIAN;
     std::shared_ptr<file_metadata> _file_metadata;
 
 public:
@@ -106,7 +106,7 @@ public:
             read_tail_magic() == read_head_magic();
     }
 
-    endian_type endian_type() {
+    endian_type_e endian_type() {
         return _endian_type;
     }
 

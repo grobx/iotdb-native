@@ -26,7 +26,7 @@ namespace iotdb {
     typedef char value_type;
     typedef std::vector<value_type> container_type;
 
-    enum endian_type {
+    enum endian_type_e {
         IOTDB_BIG_ENDIAN, IOTDB_LITTLE_ENDIAN
     };
 }
