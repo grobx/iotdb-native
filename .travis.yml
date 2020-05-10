@@ -1,12 +1,49 @@
+dist: bionic
 language: cpp
 
-compiler:
-  - gcc
-  - clang
+cache:
+  ccache: true
+  directories:
+    - $HOME/Library/Caches/Homebrew
+    - ${TRAVIS_BUILD_DIR}/clang
+    - ${TRAVIS_BUILD_DIR}/clang-windows
+    - ${TRAVIS_BUILD_DIR}/llvm-utils
+    - ${TRAVIS_BUILD_DIR}/upload-tool
+    - $HOME/AppData/Local/Temp/chocolatey
+
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-9
+      env:
+        - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
+    - os: linux
+      compiler: clang
+      before_install:
+        - sudo apt-get -y install clang-9 libc++-dev libc++abi-dev
+        - eval "${MATRIX_EVAL}"
+      addons:
+        apt:
+          update: true
+      #    sources:
+      #      - llvm-toolchain-xenial-10.0
+      #    packages:
+      #      - clang-10.0
+      env:
+        - MATRIX_EVAL="CC=clang-9 && CXX=clang++-9"
+
+before_install:
+    - eval "${MATRIX_EVAL}"
 
 before_script:
   - mkdir build
   - cd build
   - cmake ..
 
-script: make && make test
+script: VERBOSE=1 make && ctest -V

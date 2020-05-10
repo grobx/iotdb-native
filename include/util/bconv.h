@@ -26,19 +26,19 @@
 namespace iotdb {
     namespace bconv {
         template<typename Tp>
-        Tp to(iotdb::vbytes bytes) {
+        Tp to(container_type& bytes) {
             Tp v;
             std::copy(bytes.rbegin(), bytes.rend(), (uint8_t*) &v);
             return v;
         }
 
         template<>
-        bool to(iotdb::vbytes bytes) {
+        bool to(container_type& bytes) {
             return bytes[0] == 1u;
         }
 
         template<>
-        std::string to(iotdb::vbytes bytes) {
+        std::string to(container_type& bytes) {
             return std::string(bytes.begin(), bytes.end());
         }
     }

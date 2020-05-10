@@ -20,7 +20,7 @@ cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 file(STRINGS "VERSION" VERSION_STRING)
 project(iotdb-native VERSION "${VERSION_STRING}" LANGUAGES CXX)
 SET (CMAKE_VERBOSE_MAKEFILE 0)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 SET (MAINFOLDER ${PROJECT_SOURCE_DIR})
@@ -76,8 +76,17 @@ if(CMAKE_COMPILER_IS_GNUCXX)
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             DEPENDS "coverage"
             )
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CMAKE_CXX_FLAGS "-stdlib=libc++")
+    link_libraries("-lc++abi")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10.0.0" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "9.0.0")
+    endif()
 endif()
 ### Configurations ###
-include_directories(${MAINFOLDER}/include)
-add_subdirectory(src)
+
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+file(GLOB_RECURSE IOTDB_SRC "src/*.cpp" "include/*.h")
+add_library(iotdb STATIC ${IOTDB_SRC})
+target_include_directories(iotdb PUBLIC include)
+
 add_subdirectory(test)

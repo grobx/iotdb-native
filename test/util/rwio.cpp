@@ -51,7 +51,7 @@ SCENARIO( "rwio can read short", "[rwio]" ) {
         iotdb::util::bytebuffer bstream({2,1});
 
         WHEN( "we read a short from buffer stream" ) {
-            std::optional<int16_t> x = rwio::read<short>(bstream);
+            std::optional<int16_t> x = rwio::read<int16_t>(bstream);
 
             THEN( "the number 0x201 is returned" ) {
                 REQUIRE( 0x201 == x.value() );
@@ -63,7 +63,7 @@ SCENARIO( "rwio can read short", "[rwio]" ) {
         iotdb::util::bytebuffer bstream({1});
 
         WHEN( "we read a short from buffer stream" ) {
-            std::optional<int16_t> x = rwio::read<short>(bstream);
+            std::optional<int16_t> x = rwio::read<int16_t>(bstream);
 
             THEN_NO_VALUE_IN(x);
         }
@@ -144,7 +144,7 @@ SCENARIO( "rwio can read float", "[rwio]" ) {
 
 SCENARIO( "rwio can read double", "[rwio]" ) {
     GIVEN( "a buffer stream with content: {64,9,33,125,84,68,45,24}" ) {
-        iotdb::util::bytebuffer bstream({64, 9, 33, 125, 84, 68, 45, 24});
+        iotdb::util::bytebuffer bstream({64, 9, 33, -5, 84, 68, 45, 24});
 
         WHEN( "we read a double from buffer stream" ) {
             std::optional<double_t> x = rwio::read<double_t>(bstream);
@@ -236,8 +236,7 @@ SCENARIO( "rwio can read enums", "[rwio]" ) {
 
 SCENARIO( "rwio can read int list", "[rwio]" ) {
     GIVEN( "a buffer stream with content: {0,0,0,2,8,7,6,5,4,3,2,1}" ) {
-
-        iotdb::util::bytebuffer bstream{0,0,0,7,8,7,6,5,4,3,2,1};
+        iotdb::util::bytebuffer bstream{0,0,0,2,8,7,6,5,4,3,2,1};
 
         WHEN( "we read an int list from buffer stream" ) {
             std::optional<std::vector<int32_t>> x =

@@ -25,16 +25,20 @@ else()
     #add_definitions(-fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer)
     set(LINK_DEPENDENCIES pthread catch_lib ) #  asan ubsan
 endif()
-set(LINK_DEPENDENCIES ${LINK_DEPENDENCIES})
-add_library(catch_lib ${MAINFOLDER}/test/tests-main.cpp)
+set(LINK_DEPENDENCIES ${LINK_DEPENDENCIES} iotdb)
+add_library(catch_lib catch.hpp tests-main.cpp)
 
-
-
-add_executable(test01-bytebuffer util/01-bytebuffer.cpp)
-target_include_directories(test01-bytebuffer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+add_executable(test01-bytebuffer util/bytebuffer.cpp)
 target_link_libraries(test01-bytebuffer ${LINK_DEPENDENCIES})
 add_test("Should_Init_ByteBuffer" test01-bytebuffer)
-add_executable(test02-rwio util/02-rwio.cpp)
+
+add_executable(test02-rwio util/rwio.cpp)
 target_link_libraries(test02-rwio ${LINK_DEPENDENCIES})
-add_test("Should_ReadWrite_FromDisk" test02-rwio)
+add_test("Should_ReadWrite_FromBuffer" test02-rwio)
+
+add_executable(test03-sequence_reader tsfile/file-sequence_reader.cpp)
+target_link_libraries(test03-sequence_reader ${LINK_DEPENDENCIES})
+add_test("Should_XXX" test03-sequence_reader)
+configure_file("TsFileSequenceReaderTest.tsfile" "TsFileSequenceReaderTest.tsfile" COPYONLY)
+
 include(CTest)

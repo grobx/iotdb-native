@@ -30,6 +30,8 @@
 #include <memory>
 #include <optional>
 
+#include "iotdb.h"
+
 namespace iotdb {
     namespace util {
 
@@ -87,13 +89,13 @@ namespace iotdb {
              * Read as single bute
              * @return byte read from the buffer
              */
-            uint8_t read();
+            T read();
             /**
              * read n elements and places than to a buffer
              * @param s buffer to put the data
              * @param n number of items
              */
-            void read(char* s, std::streamsize n);
+            void read(T* s, std::streamsize n);
             /**
              *
              * @param c
@@ -163,8 +165,7 @@ namespace iotdb {
              */
             const T &operator[](std::size_t idx) const;
         };
-        typedef basic_bytebuffer<int8_t> bytebuffer;
-        typedef basic_bytebuffer<uint8_t> ubytebuffer;
+        typedef basic_bytebuffer<iotdb::value_type> bytebuffer;
     }
 }
 namespace iotdb {
@@ -174,7 +175,7 @@ namespace iotdb {
             _reader_index = 16;
             _writer_index = 128;
         }
-        template <typename T> basic_bytebuffer<T>::basic_bytebuffer(size_t n) {
+        template <typename T> basic_bytebuffer<T>::basic_bytebuffer(size_t n) : _bytes(n) {
             _bytes.reserve(n);
             _reader_index = n / 16;
             _writer_index = n / 2;
@@ -190,11 +191,10 @@ namespace iotdb {
             _writer_index -= _reader_index;
             _reader_index = 0;
         }
-        template <typename T> void basic_bytebuffer<T>::read(char* s, std::streamsize n) {
+        template <typename T> void basic_bytebuffer<T>::read(T* s, std::streamsize n) {
             auto data = read_n(n);
             std::memcpy(s, data->data(), n);
         }
-
         template <typename T> void basic_bytebuffer<T>::get (char& c) {
             auto v = read();
             c = static_cast<char>(v);
@@ -202,7 +202,7 @@ namespace iotdb {
         template <typename T> bool basic_bytebuffer<T>::is_readable() const {
             return (_reader_index <= _writer_index);
         }
-        template <typename T> uint8_t basic_bytebuffer<T>::read() {
+        template <typename T> T basic_bytebuffer<T>::read() {
             std::lock_guard <std::mutex> lock(_buffermutex);
             auto tmp = _bytes[_reader_index];
             _reader_index++;
