@@ -36,4 +36,9 @@ add_executable(test02-rwio util/rwio.cpp)
 target_link_libraries(test02-rwio ${LINK_DEPENDENCIES})
 add_test("Should_ReadWrite_FromBuffer" test02-rwio)
 
+add_executable(test03-sequence_reader tsfile/file-sequence_reader.cpp)
+target_link_libraries(test03-sequence_reader ${LINK_DEPENDENCIES})
+add_test("Should_XXX" test03-sequence_reader)
+configure_file("TsFileSequenceReaderTest.tsfile" "TsFileSequenceReaderTest.tsfile" COPYONLY)
+
 include(CTest)
