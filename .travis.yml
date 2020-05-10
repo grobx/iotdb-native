@@ -26,7 +26,7 @@ matrix:
     - os: linux
       compiler: clang
       before_install:
-        - sudo apt-get -y install clang-9 libc++-dev libc++abi-dev
+        - sudo apt-get -y install clang-9 libc++-9-dev libc++abi-9-dev
         - eval "${MATRIX_EVAL}"
       addons:
         apt:

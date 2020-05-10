@@ -77,9 +77,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
             DEPENDS "coverage"
             )
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "-stdlib=libc++")
-    link_libraries("-lc++abi")
     if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10.0.0" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "9.0.0")
+        set(CMAKE_CXX_FLAGS "-stdlib=libc++")
     endif()
 endif()
 ### Configurations ###
