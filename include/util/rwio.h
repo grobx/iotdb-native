@@ -32,13 +32,6 @@ using namespace iotdb::tsfile::file::metadata;
 
 namespace iotdb {
     namespace rwio {
-        constexpr std::size_t BOOL_LEN = 1;
-        constexpr std::size_t SHORT_LEN = 2;
-        constexpr std::size_t INT_LEN = 4;
-        constexpr std::size_t LONG_LEN = 8;
-        constexpr std::size_t DOUBLE_LEN = 8;
-        constexpr std::size_t FLOAT_LEN = 4;
-
         /**( READ BASE TYPES )**/
 
         template<typename Tp = bool, typename InputStream>
@@ -50,7 +43,7 @@ namespace iotdb {
             } else {
                 len = sizeof(Tp);
             }
-            std::optional <iotdb::vbytes> res = bstream.read_n(len);
+            std::optional <container_type> res = bstream.read_n(len);
             if (!res) {
                 return {};
             }
@@ -68,22 +61,6 @@ namespace iotdb {
             }
             return static_cast<Tp>(res.value());
         }
-        template<typename Tp, typename OutputStream> size_t
-        write(const Tp& data, OutputStream& stream);
-
-        template<> size_t
-        write<int8_t, std::ostream>(const int8_t& data, std::ostream& stream) {
-            return 0;
-        }
-        template<> size_t
-        write<int8_t,iotdb::util::bytebuffer>(const int8_t& data, iotdb::util::bytebuffer& stream) {
-            return 0;
-        }
-        template<> size_t
-        write<std::string,iotdb::util::bytebuffer>(const std::string& data, iotdb::util::bytebuffer& stream) {
-            return 0;
-        }
-
 
         /**( READ CONTAINERS )**/
 
@@ -102,17 +79,22 @@ namespace iotdb {
             return res;
         }
 
-        template<typename InputStream> std::string read_string(InputStream& bstream) {
-            int32_t len = read<int32_t>(bstream).value_or(0);
-            if (len <= 0) {
-                return {};
-            }
-            std::string res;
-            res.reserve(len);
-            for (int i = 0; i < len; ++i) {
-                res.push_back(read<char>(bstream).value());
-            }
-            return res;
+        /**( WRITE )**/
+
+        template<typename Tp, typename OutputStream> size_t
+        write(const Tp& data, OutputStream& stream);
+
+        template<> size_t
+        write<int8_t, std::ostream>(const int8_t& data, std::ostream& stream) {
+            return 0;
+        }
+        template<> size_t
+        write<int8_t,iotdb::util::bytebuffer>(const int8_t& data, iotdb::util::bytebuffer& stream) {
+            return 0;
+        }
+        template<> size_t
+        write<std::string,iotdb::util::bytebuffer>(const std::string& data, iotdb::util::bytebuffer& stream) {
+            return 0;
         }
     }
 }
