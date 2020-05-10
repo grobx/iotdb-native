@@ -16,9 +16,8 @@
  * under the License.
  */
 
-#include <chunk_header.h>
 #include <iostream>
-#include <metadata.h>
+#include <tsfile/file/header/chunk_header.h>
 
 namespace iotdb {
     namespace tsfile {
@@ -37,7 +36,7 @@ namespace iotdb {
                  * @param encoding          type of encoding
                  * @param numOfPages        numeber of pages
                  */
-                chunk_header::chunk_header(std::string measurementID,
+                chunk_header::chunk_header(const std::string& measurementID,
                                            int dataSize,
                                            int headerSize,
                                            ts_datatype dataType,
@@ -58,13 +57,15 @@ namespace iotdb {
                  */
                 size_t chunk_header::to_buffer(iotdb::util::bytebuffer &buffer) {
                     size_t length = 0;
+                    /*
                     length+=rwio::write(iotb::tsfile::file::CHUNK_HEADER, buffer);
                     length+=rwio::write<std::string>(_measurement_id,buffer);
                     length+=rwio::write<int>(_data_size,buffer);
                     length+=rwio::write<int8_t>(_datatype,buffer);
                     length+=rwio::write<int8_t>(_compression_type, buffer);
                     length+=rwio::write<int>(_num_of_pages, buffer);
-                    return lenght;
+                     */
+                    return length;
                 }
 
                 /**
@@ -79,10 +80,9 @@ namespace iotdb {
                  * Set measurement id.
                  * @param id identifier of measurement
                  */
-                void chunk_header::set_measurement_id(const std::string &id) const {
+                void chunk_header::set_measurement_id(const std::string& id) {
                     _measurement_id = id;
                 }
-
                 /**
                  * Get the compression type
                  * @return Type of the compression.
@@ -95,7 +95,7 @@ namespace iotdb {
                  * Set the type of the compression
                  * @param type type of the compression
                  */
-                void chunk_header::set_compression_type(const compression_type &type) const {
+                void chunk_header::set_compression_type(const compression_type &type)  {
                     _compression_type = type;
                 }
 
@@ -111,7 +111,7 @@ namespace iotdb {
                  * Ser the timeseries datatype
                  * @param type datatype
                  */
-                void chunk_header::set_ts_datatype(const ts_datatype &type) const {
+                void chunk_header::set_ts_datatype(const ts_datatype &type)  {
                     _datatype = type;
                 }
 
@@ -127,7 +127,7 @@ namespace iotdb {
                  * Set the time series encoding
                  * @param type encoding of the time serie
                  */
-                void chunk_header::set_ts_encoding(const ts_encoding &type) const {
+                void chunk_header::set_ts_encoding(const ts_encoding &type)  {
                     _encoding_type = type;
                 }
 
@@ -136,7 +136,7 @@ namespace iotdb {
                  * @return number of pages
                  */
                 int chunk_header::get_num_of_pages() const {
-                    return _number_of_pages;
+                    return _num_of_pages;
                 }
 
                 /**
@@ -144,16 +144,16 @@ namespace iotdb {
                  * @param num_of_pages number of pages.
                  */
                 void chunk_header::set_num_of_pages(const int &num_of_pages) {
-                    _number_of_pages = num_of_pages;
+                    _num_of_pages = num_of_pages;
                 }
                 /**
                  * Convert an buffer to a string
                  * @return convert the current buffer to a string
                  */
                 std::string chunk_header::str() const {
-                    iotdb::util::bytebuffer buffer(1024);
-                    to_buffer(buffer);
-                    return buffer.hex();
+                   // iotdb::util::bytebuffer buffer(1024);
+                   // to_buffer(buffer);
+                    return "";
                 }
             }
         }

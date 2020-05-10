@@ -16,17 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-#ifndef IOTDB_NATIVE_H
-#define IOTDB_NATIVE_H
-
-#include <stdint.h>
-#include <vector>
-#include <tuple>
-
-
-
+#ifndef IOTDB_NATIVE_STATISTICS_H
+#define IOTDB_NATIVE_STATISTICS_H
 namespace iotdb {
-    using vbytes = std::vector<int8_t>;
+    namespace tsfile {
+        namespace file {
+            namespace metadata {
+                namespace stats {
+                    class statistics {
+                    };
+                }
+            }
+        }
+    }
 }
-
-#endif // IOTDB_NATIVE_H
+#endif //IOTDB_NATIVE_STATISTICS_H

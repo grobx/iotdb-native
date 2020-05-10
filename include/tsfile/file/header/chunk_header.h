@@ -21,9 +21,9 @@
 #define IOTDB_NATIVE_CHUNK_HEADER_H
 
 #include <iostream>
-#include <concept>
-#include <metadata.h>
 #include <util/rwio.h>
+#include <tsfile/file/metadata/metadata.h>
+#include <tsfile/file/markers.h>
 
 
 namespace iotdb {
@@ -31,7 +31,8 @@ namespace iotdb {
         namespace file {
             namespace header {
 
-                using namespace iotdb::tsfile::file::metadata;
+                namespace metadata = iotdb::tsfile::file::metadata;
+                namespace header = iotdb::tsfile::file::header;
 
                 /**
                  * Class that holds the responsibility to model a chunk header
@@ -49,31 +50,38 @@ namespace iotdb {
                      * @param encoding          type of encoding
                      * @param numOfPages        numeber of pages
                      */
-                    chunk_header(std::string measurementID,
-                                int dataSize,
-                                int headerSize,
-                                ts_datatype dataType,
-                                compression_type compressionType,
-                                ts_encoding encoding,
-                                int numOfPages): _measurement_id(measurementID),
-                                                 _data_size(dataSize),
-                                                 _datatype(dataType),
-                                                 _compression_type(compressionType),
-                                                 _encoding_type(encoding),
-                                                 _num_of_pages(numOfPages) {
-                    }
-                    friend ostream& operator<<(ostream& os, const chunk_header& dt);
-                    size_t to_buffer(bytebuffer& buffer);
+                    chunk_header(const std::string &measurementID,
+                                 int dataSize,
+                                 int headerSize,
+                                 ts_datatype dataType,
+                                 compression_type compressionType,
+                                 ts_encoding encoding,
+                                 int numOfPages);
+
+                    friend std::ostream &operator<<(std::ostream &os, const header::chunk_header &dt);
+
+                    size_t to_buffer(iotdb::util::bytebuffer &buffer);
+
                     std::string get_measurement_id() const;
-                    void set_measurement_id(const std::string& id) const;
+
+                    void set_measurement_id(const std::string &id);
+
                     compression_type get_compression_type() const;
-                    void set_compression_type(const compression_type& type) const;
+
+                    void set_compression_type(const metadata::compression_type &type);
+
                     ts_datatype get_ts_datatype() const;
-                    void set_ts_datatype(const ts_datatype& type) const;
+
+                    void set_ts_datatype(const metadata::ts_datatype &type);
+
                     ts_encoding get_ts_encoding() const;
-                    void set_ts_encoding(const ts_encoding& type) const;
+
+                    void set_ts_encoding(const metadata::ts_encoding &type);
+
                     int get_num_of_pages() const;
-                    void set_num_of_pages(const int& num_of_pages);
+
+                    void set_num_of_pages(const int &num_of_pages);
+
                     std::string str() const;
 
                 private:
@@ -84,8 +92,8 @@ namespace iotdb {
                     ts_encoding _encoding_type;
                     int _num_of_pages;
                 };
-                ostream& operator<<(ostream& os, const chunk_header& header)
-                {
+
+                std::ostream &operator<<(std::ostream &os, const header::chunk_header &header) {
 
                     /*
                       length += ReadWriteIOUtils.write(MetaMarker.CHUNK_HEADER, outputStream);
@@ -98,6 +106,7 @@ namespace iotdb {
                      * */
                     return os;
                 }
+
                 /**
                  *
                  * @tparam T
@@ -106,10 +115,10 @@ namespace iotdb {
                  * @return
                  */
                 template<typename T>
-                std::unique_ptr <chunk_header> make_chunk_header(const T &stream, bool marker_read) {
+                std::unique_ptr<chunk_header> make_chunk_header(const T &stream, bool marker_read) {
                     if (!marker_read) {
                         char marker;
-                        stream.get(&marker)
+                        // stream.get(&marker);
                         if (marker != iotdb::tsfile::file::CHUNK_HEADER) {
                             throw std::runtime_error("Invalid header");
                         }

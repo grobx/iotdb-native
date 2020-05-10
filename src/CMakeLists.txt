@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+file(GLOB_RECURSE TSFILE_SRC "*.cpp")
+include_directories(../include)
+add_library(tsfile STATIC ${TSFILE_SRC})
+target_include_directories(tsfile PUBLIC ../include)

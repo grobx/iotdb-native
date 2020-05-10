@@ -68,6 +68,22 @@ namespace iotdb {
             }
             return static_cast<Tp>(res.value());
         }
+        template<typename Tp, typename OutputStream> size_t
+        write(const Tp& data, OutputStream& stream);
+
+        template<> size_t
+        write<int8_t, std::ostream>(const int8_t& data, std::ostream& stream) {
+            return 0;
+        }
+        template<> size_t
+        write<int8_t,iotdb::util::bytebuffer>(const int8_t& data, iotdb::util::bytebuffer& stream) {
+            return 0;
+        }
+        template<> size_t
+        write<std::string,iotdb::util::bytebuffer>(const std::string& data, iotdb::util::bytebuffer& stream) {
+            return 0;
+        }
+
 
         /**( READ CONTAINERS )**/
 
