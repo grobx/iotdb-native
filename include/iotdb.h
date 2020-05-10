@@ -21,12 +21,14 @@
 
 #include <stdint.h>
 #include <vector>
-#include <tuple>
-
-
 
 namespace iotdb {
-    using vbytes = std::vector<int8_t>;
+    typedef char value_type;
+    typedef std::vector<value_type> container_type;
+
+    enum endian_type {
+        IOTDB_BIG_ENDIAN, IOTDB_LITTLE_ENDIAN
+    };
 }
 
 #endif // IOTDB_NATIVE_H

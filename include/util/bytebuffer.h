@@ -30,6 +30,8 @@
 #include <memory>
 #include <optional>
 
+#include "iotdb.h"
+
 namespace iotdb {
     namespace util {
 
@@ -163,8 +165,7 @@ namespace iotdb {
              */
             const T &operator[](std::size_t idx) const;
         };
-        typedef basic_bytebuffer<int8_t> bytebuffer;
-        typedef basic_bytebuffer<uint8_t> ubytebuffer;
+        typedef basic_bytebuffer<iotdb::value_type> bytebuffer;
     }
 }
 namespace iotdb {
@@ -174,7 +175,7 @@ namespace iotdb {
             _reader_index = 16;
             _writer_index = 128;
         }
-        template <typename T> basic_bytebuffer<T>::basic_bytebuffer(size_t n) {
+        template <typename T> basic_bytebuffer<T>::basic_bytebuffer(size_t n) : _bytes(n) {
             _bytes.reserve(n);
             _reader_index = n / 16;
             _writer_index = n / 2;
