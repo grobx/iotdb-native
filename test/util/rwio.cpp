@@ -51,7 +51,7 @@ SCENARIO( "rwio can read short", "[rwio]" ) {
         iotdb::util::bytebuffer bstream({2,1});
 
         WHEN( "we read a short from buffer stream" ) {
-            std::optional<int16_t> x = rwio::read<short>(bstream);
+            std::optional<int16_t> x = rwio::read<int16_t>(bstream);
 
             THEN( "the number 0x201 is returned" ) {
                 REQUIRE( 0x201 == x.value() );
@@ -63,7 +63,7 @@ SCENARIO( "rwio can read short", "[rwio]" ) {
         iotdb::util::bytebuffer bstream({1});
 
         WHEN( "we read a short from buffer stream" ) {
-            std::optional<int16_t> x = rwio::read<short>(bstream);
+            std::optional<int16_t> x = rwio::read<int16_t>(bstream);
 
             THEN_NO_VALUE_IN(x);
         }
