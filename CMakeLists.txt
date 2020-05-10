@@ -78,6 +78,10 @@ if(CMAKE_COMPILER_IS_GNUCXX)
             )
 endif()
 ### Configurations ###
-include_directories(${MAINFOLDER}/include)
-add_subdirectory(src)
+
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+file(GLOB_RECURSE IOTDB_SRC "src/*.cpp" "include/*.h")
+add_library(iotdb STATIC ${IOTDB_SRC})
+target_include_directories(iotdb PUBLIC include)
+
 add_subdirectory(test)
