@@ -26,7 +26,7 @@ else()
     set(LINK_DEPENDENCIES pthread catch_lib ) #  asan ubsan
 endif()
 set(LINK_DEPENDENCIES ${LINK_DEPENDENCIES} iotdb)
-add_library(catch_lib ${MAINFOLDER}/test/tests-main.cpp)
+add_library(catch_lib catch.hpp tests-main.cpp)
 
 add_executable(test01-bytebuffer util/bytebuffer.cpp)
 target_link_libraries(test01-bytebuffer ${LINK_DEPENDENCIES})
