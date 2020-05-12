@@ -119,6 +119,6 @@ public:
     }
 };
 
-} } }
+}}}
 
 #endif // IOTDB__TSFILE__READ__SEQUENCE_READER__H
