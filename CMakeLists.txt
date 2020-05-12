@@ -19,6 +19,8 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 file(STRINGS "VERSION" VERSION_STRING)
 project(iotdb-native VERSION "${VERSION_STRING}" LANGUAGES CXX)
+
+
 SET (CMAKE_VERBOSE_MAKEFILE 0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -28,6 +30,7 @@ SET (MAINFOLDER ${PROJECT_SOURCE_DIR})
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(CMakeDependentOption)
 include (CTest)
+include($ENV{HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake)
 enable_testing()
 include_directories("${MAINFOLDER}/include")
 include_directories(${CMAKE_CURRENT_BINARY_DIR})

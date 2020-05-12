@@ -44,44 +44,90 @@ namespace iotdb {
                      * Construct a chunk header
                      * @param measurementID     id of measurement
                      * @param dataSize          size of the data
-                     * @param headerSize        size of the header
                      * @param dataType          type of the data
                      * @param compressionType   type of compression
                      * @param encoding          type of encoding
                      * @param numOfPages        numeber of pages
                      */
-                    chunk_header(const std::string &measurementID,
-                                 int dataSize,
-                                 int headerSize,
-                                 ts_datatype dataType,
-                                 compression_type compressionType,
-                                 ts_encoding encoding,
-                                 int numOfPages);
+                    chunk_header(const std::string& measurementID,int dataSize,
+                                metadata::ts_datatype dataType,
+                                metadata::compression_type compressionType,
+                                metadata::ts_encoding encoding,
+                                int numOfPages);
 
-                    friend std::ostream &operator<<(std::ostream &os, const header::chunk_header &dt);
-
-                    size_t to_buffer(iotdb::util::bytebuffer &buffer);
-
+                    /**
+                     * Serialize a chunk header to output stream
+                     * @param os output stream serialization
+                     * @param header
+                     * @return
+                     */
+                    friend std::ostream &operator<<(std::ostream &os, const header::chunk_header &header);
+                    /**
+                     * Serialize an chunk header to a buffer
+                     * @param buffer
+                     * @return
+                     */
+                    size_t to_buffer(iotdb::util::bytebuffer &buffer) const;
+                    /**
+                     * Get measurement identifier
+                     * @return the measurement id
+                     */
                     std::string get_measurement_id() const;
 
+                    /**
+                     * Get the data size.
+                     */
+                     size_t get_data_size() const;
+                    /**
+                     * Set measurement identifier
+                     * @param id
+                     */
                     void set_measurement_id(const std::string &id);
 
+                    /**
+                     * Get the compression type.
+                     * @return compression type
+                     */
                     compression_type get_compression_type() const;
-
+                    /**
+                     * Set the compression type
+                     * @param type of the compression.
+                     */
                     void set_compression_type(const metadata::compression_type &type);
-
+                    /**
+                     * Get the time series data type
+                     * @return time series data type
+                     */
                     ts_datatype get_ts_datatype() const;
-
+                    /**
+                     * Set the time series data type
+                     */
                     void set_ts_datatype(const metadata::ts_datatype &type);
-
+                    /**
+                     * Get the time series data type
+                     * @return time series encoding.
+                     */
                     ts_encoding get_ts_encoding() const;
-
+                    /**
+                     * Set the time series encoding
+                     * @param type series encoding
+                     */
                     void set_ts_encoding(const metadata::ts_encoding &type);
+                    /**
+                     * Get number of pages
+                     * @return current number of pages.
+                     */
 
                     int get_num_of_pages() const;
-
+                    /**
+                     * Set the number of paging
+                     * @param num_of_pages
+                     */
                     void set_num_of_pages(const int &num_of_pages);
-
+                    /**
+                     *
+                     * @return
+                     */
                     std::string str() const;
 
                 private:
@@ -92,36 +138,48 @@ namespace iotdb {
                     ts_encoding _encoding_type;
                     int _num_of_pages;
                 };
-
                 std::ostream &operator<<(std::ostream &os, const header::chunk_header &header) {
-
-                    /*
-                      length += ReadWriteIOUtils.write(MetaMarker.CHUNK_HEADER, outputStream);
-                      length += ReadWriteIOUtils.write(measurementID, outputStream);
-                      length += ReadWriteIOUtils.write(dataSize, outputStream);
-    length += ReadWriteIOUtils.write(dataType, outputStream);
-    length += ReadWriteIOUtils.write(numOfPages, outputStream);
-    length += ReadWriteIOUtils.write(compressionType, outputStream);
-    length += ReadWriteIOUtils.write(encodingType, outputStream);
-                     * */
+                       rwio::write<int8_t>(iotdb::tsfile::file::CHUNK_HEADER, os);
+                       rwio::write<std::string>(header.get_measurement_id(), os);
+                       rwio::write<int8_t>(header.get_data_size(), os);
+                       rwio::write<int8_t>(static_cast<int8_t>(header.get_ts_datatype()), os);
+                       rwio::write<int32_t>(header.get_num_of_pages(), os);
+                       rwio::write<int8_t>(static_cast<int8_t>(header.get_compression_type()), os);
+                       rwio::write<int8_t>(static_cast<int8_t>(header.get_ts_encoding()), os);
                     return os;
                 }
-
                 /**
-                 *
-                 * @tparam T
+                 * Create a header from a stream or a buffer.
+                 * @tparam T  stream or buffer to be used.
                  * @param stream
                  * @param marker_read
-                 * @return
+                 * @return a pointer to a chunk header.
                  */
                 template<typename T>
                 std::unique_ptr<chunk_header> make_chunk_header(const T &stream, bool marker_read) {
+                    auto marker = rwio::read<char>(stream);
                     if (!marker_read) {
-                        char marker;
-                        // stream.get(&marker);
-                        if (marker != iotdb::tsfile::file::CHUNK_HEADER) {
+                        if ((marker) && (marker != iotdb::tsfile::file::CHUNK_HEADER)) {
                             throw std::runtime_error("Invalid header");
                         }
+                    }
+                    auto measurement_id = rwio::read<std::string>(stream);
+                    auto data_size = rwio::read<int32_t>(stream);
+                    auto data = rwio::read<int8_t>(stream);
+                    auto num_pages = rwio::read<int32_t>(stream);
+                    auto compression = rwio::read<int8_t>(stream);
+                    auto encoding = rwio::read<int8_t>(stream);
+                    if (measurement_id && data_size && num_pages && compression && encoding) {
+                        // ok we can return the correct header
+                        return std::make_unique<chunk_header>(measurement_id,
+                                                              data_size,
+                                                              static_cast<metadata::ts_datatype>(data),
+                                                              static_cast<metadata::compression_type>(compression),
+                                                              static_cast<metadata::ts_encoding>(encoding),
+                                                              num_pages);
+
+                    } else {
+                        throw std::runtime_error("Invalid parsing header");
                     }
                 }
             }

@@ -17,6 +17,7 @@
  */
 
 #include <iostream>
+#include <string>
 #include <tsfile/file/header/chunk_header.h>
 
 namespace iotdb {
@@ -30,7 +31,6 @@ namespace iotdb {
                  * Construct a chunk header
                  * @param measurementID     id of measurement
                  * @param dataSize          size of the data
-                 * @param headerSize        size of the header
                  * @param dataType          type of the data
                  * @param compressionType   type of compression
                  * @param encoding          type of encoding
@@ -38,10 +38,9 @@ namespace iotdb {
                  */
                 chunk_header::chunk_header(const std::string& measurementID,
                                            int dataSize,
-                                           int headerSize,
-                                           ts_datatype dataType,
-                                           compression_type compressionType,
-                                           ts_encoding encoding,
+                                           metadata::ts_datatype dataType,
+                                           metadata::compression_type compressionType,
+                                           metadata::ts_encoding encoding,
                                            int numOfPages) : _measurement_id(measurementID),
                                                              _data_size(dataSize),
                                                              _datatype(dataType),
@@ -55,19 +54,21 @@ namespace iotdb {
                  * @param buffer buffer contains the bytes
                  * @return the dimension of the buffer.
                  */
-                size_t chunk_header::to_buffer(iotdb::util::bytebuffer &buffer) {
+                size_t chunk_header::to_buffer(iotdb::util::bytebuffer &buffer) const {
                     size_t length = 0;
-                    /*
-                    length+=rwio::write(iotb::tsfile::file::CHUNK_HEADER, buffer);
-                    length+=rwio::write<std::string>(_measurement_id,buffer);
-                    length+=rwio::write<int>(_data_size,buffer);
-                    length+=rwio::write<int8_t>(_datatype,buffer);
-                    length+=rwio::write<int8_t>(_compression_type, buffer);
-                    length+=rwio::write<int>(_num_of_pages, buffer);
-                     */
+                    length+=rwio::write<int8_t>(iotdb::tsfile::file::CHUNK_HEADER, buffer);
+                    length+=rwio::write<std::string>(get_measurement_id(), buffer);
+                    length+=rwio::write<int8_t>(get_data_size(), buffer);
+                    length+=rwio::write<int8_t>(static_cast<int8_t>(get_ts_datatype()), buffer);
+                    length+=rwio::write<int32_t>(get_num_of_pages(), buffer);
+                    length+=rwio::write<int8_t>(static_cast<int8_t>(get_compression_type()), buffer);
+                    length+=rwio::write<int8_t>(static_cast<int8_t>(get_ts_encoding()), buffer);
                     return length;
                 }
 
+                size_t chunk_header::get_data_size() const {
+                    return _data_size;
+                }
                 /**
                  * Get the measurement id
                  * @return  identifier fo the measurement
@@ -138,7 +139,6 @@ namespace iotdb {
                 int chunk_header::get_num_of_pages() const {
                     return _num_of_pages;
                 }
-
                 /**
                  * Set the number of pages
                  * @param num_of_pages number of pages.
@@ -151,9 +151,9 @@ namespace iotdb {
                  * @return convert the current buffer to a string
                  */
                 std::string chunk_header::str() const {
-                   // iotdb::util::bytebuffer buffer(1024);
-                   // to_buffer(buffer);
-                    return "";
+                   iotdb::util::bytebuffer buffer(1024);
+                   to_buffer(buffer);
+                   return buffer.hex();
                 }
             }
         }

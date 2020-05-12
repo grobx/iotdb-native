@@ -16,14 +16,14 @@
 #include <util/bytebuffer.h>
 using namespace iotdb::util;
 
-SCENARIO( "ByteBuffer should be initialized correctly", "[bytebuffer]" ) {
+SCENARIO( "bytebuffer should be initialized correctly", "[bytebuffer]" ) {
     GIVEN("a bytebuffer with predefined values") {
         bytebuffer buffer{1,25,32};
-        WHEN( "we get value by index" ) {
+        WHEN( "we access to values by index" ) {
             auto pos1 = buffer[0];
             auto pos2 = buffer[1];
             auto pos3 = buffer[2];
-            THEN( "the bool true is returned" ) {
+            THEN( "the correct values are accessed correctly" ) {
                 REQUIRE( 1 == pos1 );
                 REQUIRE( 25 == pos2 );
                 REQUIRE( 32 == pos3);
@@ -31,3 +31,21 @@ SCENARIO( "ByteBuffer should be initialized correctly", "[bytebuffer]" ) {
         }
     }
 }
+SCENARIO( "Iterating a bytebuffer should work", "[bytebuffer]") {
+    bytebuffer buffer {1, 2, 3, 4, 7, 8};
+    WHEN ("we loop through the byte buffer") {
+        THEN(" the iteration is performed correctly") {
+            int8_t sum = 0;
+            const int8_t matched = 25;
+            for (auto data : buffer) {
+                sum+=data;
+            }
+            REQUIRE( matched == sum);
+        }
+    }
+}
+SCENARIO("We should be able to write and read correctly in a byte buffer") {
+    bytebuffer buffer {1, 2};
+
+}
+

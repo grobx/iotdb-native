@@ -47,4 +47,7 @@ SCENARIO("Serializing a chunk header", "[chunkheader]") {
         }
     }
 }
+SCENARIO("Reading a chunk reader", "[chunkheader]") {
+
+}
 

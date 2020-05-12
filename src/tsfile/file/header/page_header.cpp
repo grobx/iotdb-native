@@ -1,5 +1,4 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
+/* Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
@@ -16,18 +15,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-#ifndef IOTDB_NATIVE_STATISTICS_H
-#define IOTDB_NATIVE_STATISTICS_H
+#include <tsfile/file/header/page_header.h>
 namespace iotdb {
     namespace tsfile {
         namespace file {
-            namespace metadata {
-                    class statistics {
-                    public:
-                        statistics() {}
-                    };
-                }
+            namespace header {
+                page_header::page_header(int uncompressed_size,
+                            int compressed_size,
+                            const iotdb::tsfile::file::metadata::statistics& stat,
+                            bool modified): _uncompressed(uncompressed_size),
+                                            _compressed_size(compressed_size),
+                                            _statistics(stat),
+                                            _modified(modified) {
+
+                    }
             }
         }
+    }
 }
-#endif //IOTDB_NATIVE_STATISTICS_H

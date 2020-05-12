@@ -86,6 +86,7 @@ namespace iotdb {
 
         template<> size_t
         write<int8_t, std::ostream>(const int8_t& data, std::ostream& stream) {
+            git
             return 0;
         }
         template<> size_t
@@ -96,6 +97,11 @@ namespace iotdb {
         write<std::string,iotdb::util::bytebuffer>(const std::string& data, iotdb::util::bytebuffer& stream) {
             return 0;
         }
+        template<> size_t
+        write<std::string,std::ostream>(const std::string& data, std::ostream& stream) {
+            return 0;
+        }
+
     }
 }
 
