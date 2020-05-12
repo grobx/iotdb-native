@@ -30,7 +30,7 @@
 #include <memory>
 #include <optional>
 
-#include "iotdb.h"
+#include <iotdb.h>
 
 namespace iotdb {
     namespace util {

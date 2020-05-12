@@ -16,19 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-#ifndef IOTDB_NATIVE_TSFILE_SEQUENCE_READER_H
-#define IOTDB_NATIVE_TSFILE_SEQUENCE_READER_H
+#ifndef IOTDB__TSFILE__READ__SEQUENCE_READER__H
+#define IOTDB__TSFILE__READ__SEQUENCE_READER__H
 
 #include <filesystem>
 
-#include "tsfile.h"
+#include <util/bytebuffer.h>
+#include <util/rwio.h>
+#include <tsfile/encoding/endian_type.h>
+#include <tsfile/file/metadata/file_metadata.h>
+#include <tsfile/read/tsfile.h>
 
-#include "util/bytebuffer.h"
-#include "util/rwio.h"
-
-#include "file_metadata.h"
-
-namespace iotdb { namespace tsfile { namespace file {
+namespace iotdb { namespace tsfile { namespace read {
 
 class sequence_reader {
     const std::string MAGIC_STRING = "TsFile";
@@ -37,7 +36,7 @@ class sequence_reader {
     tsfile _tsfile_input;
     int32_t _metadata_size;
     std::size_t _metadata_pos;
-    endian_type_e _endian_type = IOTDB_BIG_ENDIAN;
+    encoding::endian_type _endian_type = encoding::IOTDB_BIG_ENDIAN;
     std::shared_ptr<file_metadata> _file_metadata;
 
 public:
@@ -106,7 +105,7 @@ public:
             read_tail_magic() == read_head_magic();
     }
 
-    endian_type_e endian_type() {
+    encoding::endian_type endian_type() {
         return _endian_type;
     }
 
@@ -122,4 +121,4 @@ public:
 
 } } }
 
-#endif // IOTDB_NATIVE_TSFILE_SEQUENCE_READER_H
+#endif // IOTDB__TSFILE__READ__SEQUENCE_READER__H

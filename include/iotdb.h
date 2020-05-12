@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-#ifndef IOTDB_NATIVE_H
-#define IOTDB_NATIVE_H
+#ifndef IOTDB__H
+#define IOTDB__H
 
 #include <stdint.h>
 #include <vector>
@@ -25,10 +25,6 @@
 namespace iotdb {
     typedef char value_type;
     typedef std::vector<value_type> container_type;
-
-    enum endian_type_e {
-        IOTDB_BIG_ENDIAN, IOTDB_LITTLE_ENDIAN
-    };
 }
 
-#endif // IOTDB_NATIVE_H
+#endif // IOTDB__H

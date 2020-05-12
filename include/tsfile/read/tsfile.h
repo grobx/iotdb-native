@@ -16,14 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-#ifndef IOTDB_TSFILE_FILE_TSFILE
-#define IOTDB_TSFILE_FILE_TSFILE
+#ifndef IOTDB__TSFILE__READ__TSFILE__H
+#define IOTDB__TSFILE__READ__TSFILE__H
 
 #include <fstream>
 
-#include "util/bytebuffer.h"
+#include <util/bytebuffer.h>
 
-namespace iotdb { namespace tsfile { namespace file {
+namespace iotdb { namespace tsfile { namespace read {
+
 class tsfile {
 public:
     using fstream = std::basic_ifstream<util::bytebuffer::value_type>;
@@ -74,6 +75,7 @@ public:
         _file_input.seekg(cur);
     }
 };
-} } }
 
-#endif // IOTDB_TSFILE_FILE_TSFILE
+}}}
+
+#endif // IOTDB__TSFILE__READ__TSFILE__H
