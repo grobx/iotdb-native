@@ -82,7 +82,7 @@ public:
         std::size_t magic_string_size = MAGIC_STRING.size();
         util::bytebuffer head_magic(magic_string_size);
         if (move_position) {
-            _tsfile_input.position(0);
+            _tsfile_input.pos(0);
             _tsfile_input.read(head_magic);
         } else {
             _tsfile_input.read(head_magic, 0);
