@@ -45,7 +45,52 @@ SCENARIO( "Iterating a bytebuffer should work", "[bytebuffer]") {
     }
 }
 SCENARIO("We should be able to write and read correctly in a byte buffer") {
-    bytebuffer buffer {1, 2};
+    bytebuffer buffer(10);
+    WHEN(" assign bytes to the byte buffer") {
+        THEN("then bytes are in the correct position in the array") {
+            for(int i = 0; i < 3; i++) {
+                buffer[i] = i;
+            }
+            REQUIRE( 0 == buffer[0]);
+            REQUIRE( 1 == buffer[1]);
+            REQUIRE( 2 == buffer[2]);
+        }
+        THEN(" i can read all the data") {
+            for(int i = 0; i < 3; i++) {
+                buffer[i] = i;
+            }
+            std::vector<char> data = buffer.read_all();
+            REQUIRE( 0 == data[0]);
+            REQUIRE( 1 == data[1]);
+            REQUIRE( 2 == data[2]);
+        }
+        THEN("i can read at most n bytes") {
+            for(int i = 0; i < 3; i++) {
+                buffer[i] = i * 2;
+            }
+            auto data = buffer.read_n(2);
+            REQUIRE( 0 == data.value()[0]);
+            REQUIRE( 1 == data.value()[1]);
+        }
+        THEN("i can use the iterators" ) {
+            for(int i = 0; i < 3; i++) {
+                buffer[i] = i * 2;
+            }
+            auto j = 0;
+            for(char v: buffer) {
+                if (j == 0 ){
+                    REQUIRE( 0 == v);
+                }
+                if (j == 1) {
+                    REQUIRE( 2 == v);
+                }
+                if (j == 2) {
+                    REQUIRE( 4 == v);
+                }
+                j++;
+            }
+        }
+    }
 
 }
 
