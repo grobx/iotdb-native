@@ -70,7 +70,7 @@ SCENARIO("We should be able to write and read correctly in a byte buffer") {
             }
             auto data = buffer.read_n(2);
             REQUIRE( 0 == data.value()[0]);
-            REQUIRE( 1 == data.value()[1]);
+            REQUIRE( 2 == data.value()[1]);
         }
         THEN("i can use the iterators" ) {
             for(int i = 0; i < 3; i++) {

@@ -285,7 +285,7 @@ namespace iotdb {
             if (_writer_index <= _reader_index) {
                 return std::vector<T >();
             }
-            std::vector<T> array(_writer_index-_reader_index);
+            std::vector<T> array;
             for (auto i = _reader_index; i <=_writer_index; ++i) {
                 array.push_back(_bytes[i]);
             }
