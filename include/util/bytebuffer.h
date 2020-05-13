@@ -262,9 +262,6 @@ namespace iotdb {
             _writer_index -= _reader_index;
             _reader_index = 0;
         }
-        template <typename T> bool basic_bytebuffer<T>::has_remaining() const noexcept {
-            return is_readable();
-        }
         template <typename T> size_t basic_bytebuffer<T>::remaining() const noexcept {
             if  (_reader_index>=_writer_index) {
                 return 0;
