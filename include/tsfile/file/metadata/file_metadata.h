@@ -25,6 +25,8 @@
 #include <util/bytebuffer.h>
 #include <util/rwio.h>
 
+namespace rwio = iotdb::util::rwio;
+
 namespace iotdb { namespace tsfile { namespace file { namespace metadata {
 
 class device_metadata_index {

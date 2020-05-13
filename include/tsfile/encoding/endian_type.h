@@ -21,7 +21,7 @@
 
 namespace iotdb { namespace tsfile { namespace encoding {
 
-enum endian_type {
+enum class endian_type {
     IOTDB_BIG_ENDIAN, IOTDB_LITTLE_ENDIAN
 };
 

@@ -33,6 +33,7 @@ namespace iotdb {
 
                 namespace metadata = iotdb::tsfile::file::metadata;
                 namespace header = iotdb::tsfile::file::header;
+                namespace rwio = iotdb::util::rwio;
 
                 /**
                  * Class that holds the responsibility to model a chunk header
@@ -88,7 +89,7 @@ namespace iotdb {
                      * Get the compression type.
                      * @return compression type
                      */
-                    compression_type get_compression_type() const;
+                    metadata::compression_type get_compression_type() const;
                     /**
                      * Set the compression type
                      * @param type of the compression.
@@ -98,7 +99,7 @@ namespace iotdb {
                      * Get the time series data type
                      * @return time series data type
                      */
-                    ts_datatype get_ts_datatype() const;
+                    metadata::ts_datatype get_ts_datatype() const;
                     /**
                      * Set the time series data type
                      */
@@ -107,7 +108,7 @@ namespace iotdb {
                      * Get the time series data type
                      * @return time series encoding.
                      */
-                    ts_encoding get_ts_encoding() const;
+                    metadata::ts_encoding get_ts_encoding() const;
                     /**
                      * Set the time series encoding
                      * @param type series encoding
@@ -133,9 +134,9 @@ namespace iotdb {
                 private:
                     std::string _measurement_id;
                     int _data_size;
-                    ts_datatype _datatype;
-                    compression_type _compression_type;
-                    ts_encoding _encoding_type;
+                    metadata::ts_datatype _datatype;
+                    metadata::compression_type _compression_type;
+                    metadata::ts_encoding _encoding_type;
                     int _num_of_pages;
                 };
                 std::ostream &operator<<(std::ostream &os, const header::chunk_header &header) {
