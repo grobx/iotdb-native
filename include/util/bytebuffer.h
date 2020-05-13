@@ -162,21 +162,23 @@ namespace iotdb {
              * @return data read
              */
             std::optional<std::vector<T>> read_n(size_t n);
-
             /**
-             *
-             * @return
+             * Return the number of remaining bytes to read
+             * @return value of the remaining bytes.
              */
 
-            bool has_remaining() const noexcept ;
-
             size_t remaining() const noexcept ;
-
+            /**
+             *  set the order to be little endian or big endian
+             * @param order
+             */
             void set_order(const tsfile::encoding::endian_type& order);
+            /**
+             * get the order to be little endian or big endian
+             * @return  order
+             */
 
             tsfile::encoding::endian_type order() const noexcept ;
-
-
 
             /**
              * Write a single byte
