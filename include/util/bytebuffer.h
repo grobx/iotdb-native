@@ -19,6 +19,7 @@
 #ifndef IOTDB_NATIVE_BYTEBUFFER_H
 #define IOTDB_NATIVE_BYTEBUFFER_H
 #include <vector>
+#include <array>
 #include <cstdlib>
 #include <cstdint>
 #include <mutex>
@@ -29,11 +30,30 @@
 #include <sstream>
 #include <memory>
 #include <optional>
+#include <bitset>
 
 #include <iotdb.h>
+#include <tsfile/encoding/endian_type.h>
 
 namespace iotdb {
     namespace util {
+
+        typedef struct bitfield
+        {
+            unsigned first     : 1;
+            unsigned second    : 1;
+            unsigned third     : 1;
+            unsigned fourth    : 1;
+            unsigned fifth     : 1;
+            unsigned six       : 1;
+            unsigned seven     : 1;
+            unsigned eight     : 1;
+        } bitfield_t;
+
+        typedef union  {
+            int8_t byte;
+            bitfield_t fields;
+        } fbyte_t;
 
         /**
         * bytebuffer is a thread safe class for a random and sequential accessible sequence of zero or more bytes (octets).
@@ -46,22 +66,15 @@ namespace iotdb {
             size_t _reader_index = 0;
             size_t _writer_index = 0;
             std::mutex _buffermutex;
-            const size_t DEFAULT_SIZE = 256;
+            tsfile::encoding::endian_type _order = tsfile::encoding::endian_type::IOTDB_BIG_ENDIAN;
         public:
             typedef typename std::vector<T> internal_buffer;
             typedef T value_type;
             typedef typename internal_buffer::iterator iterator;
+            typedef typename internal_buffer::reverse_iterator reverse_iterator;
+            typedef typename internal_buffer::const_reverse_iterator const_reverse_iterator;
             typedef typename internal_buffer::const_iterator const_iterator;
-            /**
-             * forward iterator in the buffer
-             * @return an interator
-             */
-            iterator begin() { return _bytes.begin(); }
-            /**
-             * iterator in the buffer
-             * @return
-             */
-            iterator end() { return _bytes.end(); }
+
             /**
              * default constructor
              */
@@ -84,9 +97,51 @@ namespace iotdb {
              * Check if the buffer is readable
              * @return true if the reader index < writer index
              */
-            bool is_readable() const;
+            bool is_readable() const noexcept ;
+
             /**
-             * Read as single bute
+             * forward iterator in the buffer
+             * @return an iterator to the beginning of the given container c
+             */
+            iterator begin() noexcept  { return _bytes.begin(); }
+            /**
+             * iterator in the buffer
+             * @return an iterator to the end of the given container c
+             */
+            iterator end() noexcept { return _bytes.end(); }
+
+            /**
+             * iterator constant to the buffer
+             * @return a constant iterator to the beginning of the given container c
+             */
+            const_iterator cbegin() const noexcept { return _bytes.cbegin(); }
+            /**
+             * iterator constant to the buffer
+             * @return a constant iterator to the end of the buffer
+             */
+            const_iterator cend() const noexcept  { return  _bytes.cend(); }
+            /**
+             * reverse iterator to the begin of the buffer
+             * @return reverse iterator to the end of the buffer
+             */
+            reverse_iterator rbegin() const noexcept { return _bytes.rbegin(); }
+            /**
+             * reverse iterator to the end of the buffer
+             * @return reverse iterator to the end of the buffer
+             */
+            reverse_iterator rend() const noexcept  { return  _bytes.rend(); }
+            /**
+             * constant reverse iterator to the begin of the buffer
+             * @return constant reverse iterator to the end of the buffer
+             */
+            const_reverse_iterator  crbegin() const noexcept { return _bytes.crbegin(); }
+            /**
+             * constant reverse iterator to the begin of the buffer
+             * @return constant reverse iterator to the end of the buffer
+             */
+            const_reverse_iterator crend() const noexcept { return _bytes.crend(); }
+            /**
+             * Read as single byte
              * @return byte read from the buffer
              */
             T read();
@@ -95,23 +150,35 @@ namespace iotdb {
              * @param s buffer to put the data
              * @param n number of items
              */
-            void read(T* s, std::streamsize n);
-            /**
-             *
-             * @param c
-             */
-            void get (char& c);
+            void read(T& s, std::streamsize n);
             /**
              * Read all bytes
              * @return a list of bytes
              */
-            std::vector<T> read_all();
+            std::vector<T> read_all() const ;
             /**
              * Read at most n bytes
              * @param n number of bytes to read
-             * @return a tuple containing a pointer to the data and the real number of bytes read
+             * @return data read
              */
             std::optional<std::vector<T>> read_n(size_t n);
+            /**
+             * Return the number of remaining bytes to read
+             * @return value of the remaining bytes.
+             */
+
+            size_t remaining() const noexcept ;
+            /**
+             *  set the order to be little endian or big endian
+             * @param order
+             */
+            void set_order(const tsfile::encoding::endian_type& order);
+            /**
+             * get the order to be little endian or big endian
+             * @return  order
+             */
+
+            tsfile::encoding::endian_type order() const noexcept ;
 
             /**
              * Write a single byte
@@ -164,8 +231,12 @@ namespace iotdb {
              * @return value of the byte
              */
             const T &operator[](std::size_t idx) const;
+
+        private:
+            void order_byte(int8_t & b, tsfile::encoding::endian_type& order) const noexcept;
         };
         typedef basic_bytebuffer<iotdb::value_type> bytebuffer;
+
     }
 }
 namespace iotdb {
@@ -191,15 +262,17 @@ namespace iotdb {
             _writer_index -= _reader_index;
             _reader_index = 0;
         }
-        template <typename T> void basic_bytebuffer<T>::read(T* s, std::streamsize n) {
+        template <typename T> size_t basic_bytebuffer<T>::remaining() const noexcept {
+            if  (_reader_index>=_writer_index) {
+                return 0;
+            }
+            return _writer_index - _reader_index;
+        }
+        template <typename T> void basic_bytebuffer<T>::read(T& s, std::streamsize n) {
             auto data = read_n(n);
-            std::memcpy(s, data->data(), n);
+            std::memcpy(s, data.data(), n);
         }
-        template <typename T> void basic_bytebuffer<T>::get (char& c) {
-            auto v = read();
-            c = static_cast<char>(v);
-        }
-        template <typename T> bool basic_bytebuffer<T>::is_readable() const {
+        template <typename T> bool basic_bytebuffer<T>::is_readable() const noexcept {
             return (_reader_index <= _writer_index);
         }
         template <typename T> T basic_bytebuffer<T>::read() {
@@ -208,11 +281,11 @@ namespace iotdb {
             _reader_index++;
             return tmp;
         }
-        template <typename T> std::vector<T> basic_bytebuffer<T>::read_all() {
+        template <typename T> std::vector<T> basic_bytebuffer<T>::read_all() const {
             if (_writer_index <= _reader_index) {
                 return std::vector<T >();
             }
-            std::vector<T> array(_writer_index-_reader_index);
+            std::vector<T> array;
             for (auto i = _reader_index; i <=_writer_index; ++i) {
                 array.push_back(_bytes[i]);
             }
@@ -263,6 +336,51 @@ namespace iotdb {
         template <typename T> size_t basic_bytebuffer<T>::capacity() const {
             return _bytes.capacity();
         }
+        template <typename T> void basic_bytebuffer<T>::set_order(const tsfile::encoding::endian_type& order) {
+            _order =order;
+            for (int i = 0; i < _bytes.size(); i++) {
+                order_byte(_bytes[i], _order);
+            }
+        }
+        template <typename T> tsfile::encoding::endian_type basic_bytebuffer<T>::order() const noexcept {
+            return _order;
+        }
+        template <typename T> void basic_bytebuffer<T>::order_byte(int8_t & b,
+                tsfile::encoding::endian_type& order) const noexcept {
+            const int value { 0x01 };
+            const void * address = static_cast<const void *>(&value);
+            const unsigned char * least_significant_address = static_cast<const unsigned char *>(address);
+            fbyte_t current_byte;
+            fbyte_t result_byte;
+            current_byte.byte = b;
+            if (*least_significant_address == 0x01) {
+                // the system is little_endian
+                if (order == tsfile::encoding::endian_type::IOTDB_BIG_ENDIAN) {
+                    result_byte.fields.first = current_byte.fields.eight;
+                    result_byte.fields.second = current_byte.fields.seven;
+                    result_byte.fields.third = current_byte.fields.six;
+                    result_byte.fields.fourth = current_byte.fields.fifth;
+                    result_byte.fields.fifth = current_byte.fields.fourth;
+                    result_byte.fields.six = current_byte.fields.third;
+                    result_byte.fields.seven = current_byte.fields.second;
+                    result_byte.fields.eight = current_byte.fields.first;
+                }
+            } else {
+                // the system is big_endian
+                if (order == tsfile::encoding::endian_type::IOTDB_LITTLE_ENDIAN) {
+                    result_byte.fields.first = current_byte.fields.eight;
+                    result_byte.fields.second = current_byte.fields.seven;
+                    result_byte.fields.third = current_byte.fields.six;
+                    result_byte.fields.fourth = current_byte.fields.fifth;
+                    result_byte.fields.fifth = current_byte.fields.fourth;
+                    result_byte.fields.six = current_byte.fields.third;
+                    result_byte.fields.seven = current_byte.fields.second;
+                    result_byte.fields.eight = current_byte.fields.first;
+                }
+            }
+            b = result_byte.byte;
+        }
+
         template <typename T> const std::string basic_bytebuffer<T>::hex() const {
             const char code[]{"0123456789ABCDEF"};
             std::ostringstream out;
@@ -279,7 +397,43 @@ namespace iotdb {
         }
         template <typename T>  T& basic_bytebuffer<T>::operator[](std::size_t idx) { return _bytes[idx]; }
         template <typename T> const T&  basic_bytebuffer<T>::operator[](std::size_t idx) const { return _bytes[idx]; }
+
+        template<std::size_t N> std::bitset<N> to_bitset(const iotdb::util::bytebuffer& bytebuffer) {
+            std::bitset<N> data;
+            size_t j = 0;
+            for (auto it = bytebuffer.cbegin(); it != bytebuffer.cend(); ++it) {
+                fbyte_t current_byte;
+                current_byte.byte = *it;
+                for (int k = 0; k < 8; ++k) {
+                    if (bytebuffer.order() == tsfile::encoding::endian_type::IOTDB_BIG_ENDIAN) {
+                            data.set(j, current_byte.fields.eight);
+                            data.set(j+1, current_byte.fields.seven);
+                            data.set(j+2, current_byte.fields.six);
+                            data.set(j+3, current_byte.fields.fifth);
+                            data.set(j+4, current_byte.fields.fourth);
+                            data.set(j+5, current_byte.fields.third);
+                            data.set(j+6, current_byte.fields.second);
+                            data.set(j+7, current_byte.fields.first);
+                    } else {
+                        data.set(j, current_byte.fields.first);
+                        data.set(j+1, current_byte.fields.second);
+                        data.set(j+2, current_byte.fields.third);
+                        data.set(j+3, current_byte.fields.fourth);
+                        data.set(j+4, current_byte.fields.fifth);
+                        data.set(j+5, current_byte.fields.six);
+                        data.set(j+6, current_byte.fields.seven);
+                        data.set(j+7, current_byte.fields.eight);
+                    }
+                }
+                j+=8;
+            }
+            return data;
+        }
+        template<std::size_t N> std::array<int8_t ,N> to_array(const iotdb::util::bytebuffer& bytebuffer) {
+            char *data = bytebuffer.read_all().data();
+            std::array<int8_t, N> cdata = data;
+            return cdata;
+        }
     }
 }
-
 #endif //IOTDB_NATIVE_BYTEBUFFER_H
