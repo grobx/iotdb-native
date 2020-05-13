@@ -16,16 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-#ifndef IOTDB_TSFILE_FILE_METADATA
-#define IOTDB_TSFILE_FILE_METADATA
+#ifndef IOTDB__TSFILE__FILE__METADATA__FILE_METADATA__H
+#define IOTDB__TSFILE__FILE__METADATA__FILE_METADATA__H
 
 #include <string>
 #include <unordered_map>
 
-#include "util/bytebuffer.h"
-#include "util/rwio.h"
+#include <util/bytebuffer.h>
+#include <util/rwio.h>
 
-namespace iotdb { namespace tsfile { namespace file {
+namespace rwio = iotdb::util::rwio;
+
+namespace iotdb { namespace tsfile { namespace file { namespace metadata {
 
 class device_metadata_index {
 public:
@@ -92,6 +94,6 @@ public:
     }
 };
 
-}}}
+}}}}
 
-#endif // IOTDB_TSFILE_FILE_METADATA
+#endif // IOTDB__TSFILE__FILE__METADATA__FILE_METADATA__H

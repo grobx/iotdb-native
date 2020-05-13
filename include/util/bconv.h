@@ -16,32 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-#ifndef IOTDB_NATIVE_BCONV_H
-#define IOTDB_NATIVE_BCONV_H
+#ifndef IOTDB__BCONV__H
+#define IOTDB__BCONV__H
 
 #include <string>
 
-#include "iotdb.h"
+#include <iotdb.h>
 
-namespace iotdb {
-    namespace bconv {
-        template<typename Tp>
-        Tp to(container_type& bytes) {
-            Tp v;
-            std::copy(bytes.rbegin(), bytes.rend(), (uint8_t*) &v);
-            return v;
-        }
+namespace iotdb { namespace bconv {
 
-        template<>
-        bool to(container_type& bytes) {
-            return bytes[0] == 1u;
-        }
-
-        template<>
-        std::string to(container_type& bytes) {
-            return std::string(bytes.begin(), bytes.end());
-        }
-    }
+template<typename Tp>
+Tp to(container_type& bytes) {
+    Tp v;
+    std::copy(bytes.rbegin(), bytes.rend(), (uint8_t*) &v);
+    return v;
 }
 
-#endif // IOTDB_NATIVE_BCONV_H
+template<>
+bool to(container_type& bytes) {
+    return bytes[0] == 1u;
+}
+
+template<>
+std::string to(container_type& bytes) {
+    return std::string(bytes.begin(), bytes.end());
+}
+
+}}
+
+#endif // IOTDB__BCONV__H

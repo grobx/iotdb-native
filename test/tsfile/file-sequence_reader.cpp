@@ -14,7 +14,7 @@
 
 #include "../catch.hpp"
 
-#include "tsfile/file/sequence_reader.h"
+#include "tsfile/read/sequence_reader.h"
 
 SCENARIO( "create sequence_reader instance", "[sequence_reader]" ) {
     GIVEN( "a path of a tsfile" ) {
@@ -22,7 +22,7 @@ SCENARIO( "create sequence_reader instance", "[sequence_reader]" ) {
             std::filesystem::current_path().append("TsFileSequenceReaderTest.tsfile");
 
         WHEN( "we create a sequence_reader" ) {
-            iotdb::tsfile::file::sequence_reader r(path);
+            iotdb::tsfile::read::sequence_reader r(path);
 
             THEN( "we can read the version number" ) {
                 REQUIRE( std::string("000001") == r.read_version_number() );
@@ -42,7 +42,7 @@ SCENARIO( "create sequence_reader instance", "[sequence_reader]" ) {
     GIVEN( "a sequence_reader of a given tsfile" ) {
         std::filesystem::path path =
             std::filesystem::current_path().append("TsFileSequenceReaderTest.tsfile");
-        iotdb::tsfile::file::sequence_reader r(path);
+        iotdb::tsfile::read::sequence_reader r(path);
 
         WHEN( "we ask if the file is complete" ) {
             bool x = r.is_complete();

@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-#ifndef IOTDB__H
-#define IOTDB__H
+#ifndef IOTDB__TSFILE__ENCODING__ENDIAN_TYPE__H
+#define IOTDB__TSFILE__ENCODING__ENDIAN_TYPE__H
 
-#include <stdint.h>
-#include <vector>
+namespace iotdb { namespace tsfile { namespace encoding {
 
-namespace iotdb {
-    typedef char value_type;
-    typedef std::vector<value_type> container_type;
-}
+enum class endian_type {
+    IOTDB_BIG_ENDIAN, IOTDB_LITTLE_ENDIAN
+};
 
-#endif // IOTDB__H
+}}}
+
+#endif // IOTDB__TSFILE__ENCODING__ENDIAN_TYPE__H

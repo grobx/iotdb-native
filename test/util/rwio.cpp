@@ -21,7 +21,8 @@
 
 #define THEN_NO_VALUE_IN(expr) THEN( "no value will be returned" ) { REQUIRE( !expr.has_value() ); }
 
-using namespace iotdb;
+namespace rwio = iotdb::util::rwio;
+namespace metadata = iotdb::tsfile::file::metadata;
 
 SCENARIO( "rwio can read bool", "[rwio]" ) {
     GIVEN( "a buffer stream with content: {1}" ) {
@@ -39,7 +40,7 @@ SCENARIO( "rwio can read bool", "[rwio]" ) {
         iotdb::util::bytebuffer bstream({});
 
         WHEN( "we read a bool from buffer stream" ) {
-            std::optional<int64_t> x = rwio::read<bool>(bstream);
+            std::optional<bool> x = rwio::read<bool>(bstream);
 
             THEN_NO_VALUE_IN(x);
         }
@@ -200,35 +201,34 @@ SCENARIO( "rwio can read string", "[rwio]" ) {
     }
 }
 
-using namespace iotdb::tsfile::file::metadata;
 SCENARIO( "rwio can read enums", "[rwio]" ) {
     GIVEN( "a buffer stream with content: {0,2}" ) {
         iotdb::util::bytebuffer bstream({0,2});
 
         WHEN( "we read a compression_type" ) {
-            std::optional<compression_type> x =
-                rwio::read_enum<compression_type>(bstream);
+            std::optional<metadata::compression_type> x =
+                rwio::read<metadata::compression_type>(bstream);
 
             THEN( "we got compression_type::GZIP" ) {
-                REQUIRE( compression_type::GZIP == x.value() );
+                REQUIRE( metadata::compression_type::GZIP == x.value() );
             }
         }
 
         WHEN( "we read a ts_datatype" ) {
-            std::optional<ts_datatype> x =
-                rwio::read_enum<ts_datatype>(bstream);
+            std::optional<metadata::ts_datatype> x =
+                rwio::read<metadata::ts_datatype>(bstream);
 
             THEN( "we got ts_datatype::INT64" ) {
-                REQUIRE( ts_datatype::INT64 == x.value() );
+                REQUIRE( metadata::ts_datatype::INT64 == x.value() );
             }
         }
 
         WHEN( "we read a ts_encoding" ) {
-            std::optional<ts_encoding> x =
-                rwio::read_enum<ts_encoding>(bstream);
+            std::optional<metadata::ts_encoding> x =
+                rwio::read<metadata::ts_encoding>(bstream);
 
             THEN( "we got ts_encoding::INT64" ) {
-                REQUIRE( ts_encoding::RLE == x.value() );
+                REQUIRE( metadata::ts_encoding::RLE == x.value() );
             }
         }
     }
@@ -239,11 +239,11 @@ SCENARIO( "rwio can read int list", "[rwio]" ) {
         iotdb::util::bytebuffer bstream{0,0,0,2,8,7,6,5,4,3,2,1};
 
         WHEN( "we read an int list from buffer stream" ) {
-            std::optional<std::vector<int32_t>> x =
-                rwio::read_list<int32_t>(bstream);
+            std::vector<int32_t> x =
+                rwio::read<int32_t[]>(bstream);
 
             THEN( "the list {0x8070605,0x4030201} is returned" ) {
-                REQUIRE( std::vector({0x8070605,0x4030201}) == x.value() );
+                REQUIRE( std::vector({0x8070605,0x4030201}) == x );
             }
         }
     }
@@ -252,11 +252,11 @@ SCENARIO( "rwio can read int list", "[rwio]" ) {
         iotdb::util::bytebuffer bstream{0,0,0,0};
 
         WHEN( "we read an int list from buffer stream" ) {
-            std::optional<std::vector<int32_t>> x =
-                rwio::read_list<int32_t>(bstream);
+            std::vector<int32_t> x =
+                rwio::read<int32_t[]>(bstream);
 
             THEN( "the list is empty" ) {
-                REQUIRE( 0 == x.value().size() );
+                REQUIRE( 0 == x.size() );
             }
         }
     }
@@ -268,7 +268,7 @@ SCENARIO( "rwio can read string list", "[rwio]" ) {
 
         WHEN( "we read a string list from buffer stream" ) {
             std::vector<std::string> x =
-                rwio::read_list<std::string>(bstream);
+                rwio::read<std::string[]>(bstream);
 
             THEN( "the list {'iot','db'} is returned" ) {
                 REQUIRE( std::vector({std::string("iot"), std::string("db")}) == x );
@@ -280,7 +280,7 @@ SCENARIO( "rwio can read string list", "[rwio]" ) {
         iotdb::util::bytebuffer bstream({0,0,0,0});
         WHEN( "we read a string list from buffer stream" ) {
             std::vector<std::string> x =
-                rwio::read_list<std::string>(bstream);
+                rwio::read<std::string[]>(bstream);
 
             THEN( "the list is empty" ) {
                 REQUIRE( 0 == x.size() );
