@@ -243,7 +243,7 @@ namespace iotdb {
             const T &operator[](std::size_t idx) const;
 
         private:
-            void order_byte(int8_t &b, tsfile::encoding::endian_type &order) noexcept ;
+            void order_byte(T &b, tsfile::encoding::endian_type &order) noexcept ;
 
 
         };
@@ -357,14 +357,14 @@ namespace iotdb {
         }
         template <typename T> void basic_bytebuffer<T>::set_order(const tsfile::encoding::endian_type& order) {
             _order =order;
-            for (int i = 0; i < _bytes.size(); i++) {
+            for (size_t i = 0; i < _bytes.size(); i++) {
                 order_byte(_bytes[i], _order);
             }
         }
         template <typename T> tsfile::encoding::endian_type basic_bytebuffer<T>::order() const noexcept {
             return _order;
         }
-        template <typename T> void basic_bytebuffer<T>::order_byte(int8_t & b,
+        template <typename T> void basic_bytebuffer<T>::order_byte(T& b,
                 tsfile::encoding::endian_type& order)  noexcept {
             const int value { 0x01 };
             const void * address = static_cast<const void *>(&value);

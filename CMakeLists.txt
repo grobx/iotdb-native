@@ -35,7 +35,6 @@ if (EXISTS ${VCPKG})
     set(CMAKE_TOOLCHAIN_FILE "${VCPKG}/scripts/buildsystems/vcpkg.cmake"
             CACHE STRING "")
 endif ()
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMake")
 enable_testing()
 include_directories("${MAINFOLDER}/include")
