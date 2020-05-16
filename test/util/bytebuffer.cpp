@@ -31,6 +31,17 @@ SCENARIO( "bytebuffer should be initialized correctly", "[bytebuffer]" ) {
         }
     }
 }
+SCENARIO("Changing the byte order of the buffer", "[bytebuffer]") {
+    GIVEN("a bytebuffer with predefined values") {
+        bytebuffer buffer{1, 25, 32};
+        WHEN("we ask to change to bigendian") {
+            buffer.set_order(iotdb::tsfile::encoding::endian_type::IOTDB_BIG_ENDIAN);
+            THEN(" the order change is performed correctly") {
+
+            }
+        }
+    }
+}
 SCENARIO( "Iterating a bytebuffer should work", "[bytebuffer]") {
     bytebuffer buffer {1, 2, 3, 4, 7, 8};
     WHEN ("we loop through the byte buffer") {

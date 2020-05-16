@@ -18,7 +18,7 @@
 #
 if(WIN32)
     # we support just windows 10
-    set(LINK_DEPENDENCIES ${Boost_LIBRARIES} catch_lib)
+    set(LINK_DEPENDENCIES catch_lib)
     add_definitions(-D_WIN32_WINNT=0x0A00)
 else()
     add_definitions(-Wall -Wextra -pedantic)

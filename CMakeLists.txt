@@ -19,21 +19,25 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 file(STRINGS "VERSION" VERSION_STRING)
 project(iotdb-native VERSION "${VERSION_STRING}" LANGUAGES CXX)
-
-
-SET (CMAKE_VERBOSE_MAKEFILE 0)
+set(CMAKE_VERBOSE_MAKEFILE 0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-SET (MAINFOLDER ${PROJECT_SOURCE_DIR})
-
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set(MAINFOLDER ${PROJECT_SOURCE_DIR})
 include(CMakeDependentOption)
-include (CTest)
-set(VCPKG $ENV{HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake)
-if(EXISTS ${VCPKG})
-    include(${VCPKG})
-endif()
+include(CTest)
+if (DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            CACHE STRING "")
+endif ()
+if (NOT DEFINED DEFINED CMAKE_TOOLCHAIN_FILE)
+    set(VCPKG $ENV{HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake)
+    if (EXISTS ${VCPKG})
+        set(CMAKE_TOOLCHAIN_FILE "${VCPKG}/scripts/buildsystems/vcpkg.cmake"
+                CACHE STRING "")
+    endif ()
+endif ()
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMake")
 enable_testing()
 include_directories("${MAINFOLDER}/include")
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -42,7 +46,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # Internal settings
 ##################################################
 
-set(iotdb-native_version       ${PROJECT_VERSION})
+set(iotdb-native_version ${PROJECT_VERSION})
 set(iotdb-native_MAJOR ${PROJECT_VERSION_MAJOR})
 set(iotdb-native_MINOR ${PROJECT_VERSION_MINOR})
 set(iotdb-native_PATCH ${PROJECT_VERSION_PATCH})
@@ -50,7 +54,7 @@ set(iotdb-native_SOVERSION ${iotdb-native_MAJOR})
 set(VCPKG_HOME $ENV{HOME}/scripts/buildsystems/vcpkg.cmake)
 add_definitions(-DCMAKE -DCMAKE_TOOLCHAIN_FILE=${VCPKG_HOME})
 find_package(Threads REQUIRED)
-if(CMAKE_COMPILER_IS_GNUCXX)
+if (CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
     set(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
     execute_process(COMMAND
@@ -82,16 +86,15 @@ if(CMAKE_COMPILER_IS_GNUCXX)
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             DEPENDS "coverage"
             )
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10.0.0" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "9.0.0")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10.0.0" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "9.0.0")
         set(CMAKE_CXX_FLAGS "-stdlib=libc++")
-    endif()
-endif()
+    endif ()
+endif ()
 ### Configurations ###
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 file(GLOB_RECURSE IOTDB_SRC "src/*.cpp" "include/*.h")
 add_library(iotdb STATIC ${IOTDB_SRC})
 target_include_directories(iotdb PUBLIC include)
-
 add_subdirectory(test)
