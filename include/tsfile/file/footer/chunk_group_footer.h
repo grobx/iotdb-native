@@ -42,7 +42,7 @@ namespace iotdb {
                 int _number_of_chunks;
                 int _serialized_size;
             };
-            std::ostream &operator<<(std::ostream &os, const page_header &header) {
+            std::ostream &operator<<(std::ostream &os, const iotdb::tsfile::file::chunk_group_footer &header) {
                 util::rwio::write<int8_t>(iotdb::tsfile::file::CHUNK_GROUP_FOOTER, os);
                 util::rwio::write<int>(header.get_device_id(), os);
                 util::rwio::write<int>(header.get_data_size(), os);
