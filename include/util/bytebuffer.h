@@ -257,11 +257,14 @@ namespace iotdb {
             _bytes.reserve(256);
             _reader_index = 16;
             _writer_index = 128;
+            _order = tsfile::encoding::endian_type::IOTDB_LITTLE_ENDIAN;
         }
         template <typename T> basic_bytebuffer<T>::basic_bytebuffer(size_t n) : _bytes(n) {
             _bytes.reserve(n);
             _reader_index = n / 16;
             _writer_index = n / 2;
+            _order = tsfile::encoding::endian_type::IOTDB_LITTLE_ENDIAN;
+
         }
         template <typename T> basic_bytebuffer<T>::basic_bytebuffer(const std::initializer_list <T> &l) {
             auto dim = l.size();
@@ -269,6 +272,8 @@ namespace iotdb {
             _bytes.insert(_bytes.end(), l.begin(), l.end());
             _writer_index=dim;
             _reader_index=0;
+            _order = tsfile::encoding::endian_type::IOTDB_LITTLE_ENDIAN;
+
         }
         template <typename T> void basic_bytebuffer<T>::discard_bytes() {
             _writer_index -= _reader_index;
@@ -334,9 +339,9 @@ namespace iotdb {
         }
         template <typename T> void basic_bytebuffer<T>::write(const T *buffer, size_t siz) {
             std::lock_guard <std::mutex> lock(_buffermutex);
-            _writer_index +=siz;
-            if (_writer_index >= _bytes.capacity()) {
-                _bytes.resize(_writer_index * 2);
+            size_t needed_space = _writer_index + siz;
+            if (needed_space >= _bytes.capacity()) {
+                _bytes.resize(needed_space * 2);
             }
             for (size_t i = 0; i < siz; ++i) {
                 _bytes.push_back(buffer[i]);
@@ -347,7 +352,7 @@ namespace iotdb {
             _bytes.reserve(_bytes.capacity() * 2);
         }
         template <typename T> size_t basic_bytebuffer<T>::max_writable() const {
-            return _bytes.capacity() - _writer_index;
+            return _bytes.size()- _writer_index;
         }
         template <typename T> size_t basic_bytebuffer<T>::size() const {
             return _bytes.size();
@@ -366,36 +371,20 @@ namespace iotdb {
         }
         template <typename T> void basic_bytebuffer<T>::order_byte(T& b,
                 tsfile::encoding::endian_type& order)  noexcept {
-            const int value { 0x01 };
-            const void * address = static_cast<const void *>(&value);
-            const unsigned char * least_significant_address = static_cast<const unsigned char *>(address);
             fbyte_t current_byte;
             fbyte_t result_byte;
             current_byte.byte = b;
-            if (*least_significant_address == 0x01) {
-                // the system is little_endian
-                if (order == tsfile::encoding::endian_type::IOTDB_BIG_ENDIAN) {
-                    result_byte.fields.first = current_byte.fields.eight;
-                    result_byte.fields.second = current_byte.fields.seven;
-                    result_byte.fields.third = current_byte.fields.six;
-                    result_byte.fields.fourth = current_byte.fields.fifth;
-                    result_byte.fields.fifth = current_byte.fields.fourth;
-                    result_byte.fields.six = current_byte.fields.third;
-                    result_byte.fields.seven = current_byte.fields.second;
-                    result_byte.fields.eight = current_byte.fields.first;
-                }
-            } else {
-                // the system is big_endian
-                if (order == tsfile::encoding::endian_type::IOTDB_LITTLE_ENDIAN) {
-                    result_byte.fields.first = current_byte.fields.eight;
-                    result_byte.fields.second = current_byte.fields.seven;
-                    result_byte.fields.third = current_byte.fields.six;
-                    result_byte.fields.fourth = current_byte.fields.fifth;
-                    result_byte.fields.fifth = current_byte.fields.fourth;
-                    result_byte.fields.six = current_byte.fields.third;
-                    result_byte.fields.seven = current_byte.fields.second;
-                    result_byte.fields.eight = current_byte.fields.first;
-                }
+            if (_order != order)
+            {
+                result_byte.fields.first = current_byte.fields.eight;
+                result_byte.fields.second = current_byte.fields.seven;
+                result_byte.fields.third = current_byte.fields.six;
+                result_byte.fields.fourth = current_byte.fields.fifth;
+                result_byte.fields.fifth = current_byte.fields.fourth;
+                result_byte.fields.six = current_byte.fields.third;
+                result_byte.fields.seven = current_byte.fields.second;
+                result_byte.fields.eight = current_byte.fields.first;
+                _order = order;
             }
             b = result_byte.byte;
         }

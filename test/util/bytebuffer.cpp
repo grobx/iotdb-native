@@ -49,6 +49,18 @@ SCENARIO("Changing the byte order of the buffer", "[bytebuffer]") {
         }
     }
 }
+SCENARIO("Changing size assure max writable correct", "[bytebuffer]") {
+    GIVEN( " a byte buffer with capacity and a sextuple") {
+        char sextuple[] = {3, 4, 5, 6, 7, 8};
+        bytebuffer buffer(12); // writer_index = n/2 => 6
+        WHEN("we write write the sextuple to the buffer") {
+            buffer.write(sextuple, 6);
+            THEN(" the remaining max_writable is a defined value") {
+                REQUIRE(buffer.max_writable() == 18);
+            }
+        }
+    }
+}
 SCENARIO(" Assuring capacity of the buffer", "[bytebuffer]") {
       GIVEN("a bytebuffer with predefined size ") {
           bytebuffer buffer(10);

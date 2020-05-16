@@ -37,7 +37,7 @@ add_library(catch_lib catch.hpp tests-main.cpp)
 
 add_executable(test01-bytebuffer util/bytebuffer.cpp)
 target_link_libraries(test01-bytebuffer ${LINK_DEPENDENCIES})
-add_test("Should_Init_ByteBuffer" test01-bytebuffer)
+add_test("Should_Work_ByteBuffer" test01-bytebuffer)
 
 add_executable(test02-rwio util/rwio.cpp)
 target_link_libraries(test02-rwio ${LINK_DEPENDENCIES})
@@ -45,11 +45,9 @@ add_test("Should_ReadWrite_FromBuffer" test02-rwio)
 
 add_executable(test03-sequence_reader tsfile/file-sequence_reader.cpp)
 target_link_libraries(test03-sequence_reader ${LINK_DEPENDENCIES})
-add_test("Should_XXX" test03-sequence_reader)
+add_test("Should_ReadWriteFromSequenceReader" test03-sequence_reader)
 configure_file("TsFileSequenceReaderTest.tsfile" "TsFileSequenceReaderTest.tsfile" COPYONLY)
-
 add_executable(test04-bitset util/bitset.cpp)
 target_link_libraries(test04-bitset ${LINK_DEPENDENCIES})
-add_test("Bitset_Should_Work" test04-bitset)
-
+add_test("Should_BitSet_Work" test04-bitset)
 include(CTest)
