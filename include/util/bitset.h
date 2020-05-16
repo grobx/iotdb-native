@@ -31,9 +31,11 @@ namespace iotdb { namespace util {
 
 class bitset : public std::vector<bool> {
 
-    void inline push_word(std::vector<bool>& v, std::bitset<64>& x) {
-        for (size_t i=x.size(); i>0;) {
-            v.push_back(x[--i]);
+    template<size_t Size>
+    void inline push_bitset(std::vector<bool>& v, std::bitset<Size>& x) {
+        v.resize(v.size() + Size);
+        for (size_t i = Size; i > 0; --i) {
+            v[i-1] = x[i];
         }
     }
 
@@ -53,14 +55,14 @@ public:
         std::bitset<64> data;
         while (buf.remaining() >= 8) {
             data = rwio::read<int64_t>(buf).value();
-            push_word(*this, data);
+            push_bitset(*this, data);
         }
         data = 0;
         for (int remaining = buf.remaining(), j=0; j<remaining; j++) {
             data |= (buf.read() & 0xffL) << (8 * j);
         }
         if (data != 0) {
-            push_word(*this, data);
+            push_bitset(*this, data);
         }
     }
 
