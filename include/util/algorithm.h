@@ -31,8 +31,8 @@ namespace iotdb {
         template<class BidirIt, typename UnaryPredicate>
         void reverse_find(BidirIt first, BidirIt last, UnaryPredicate pred ) {
             while ((first != last) && (first != --last)) {
-                if (pred(*first)) return first
-            }
+                if (pred(*first)) return first;
+            };
             return first;
         }
 

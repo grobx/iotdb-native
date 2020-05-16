@@ -56,7 +56,7 @@ SCENARIO("Changing size assure max writable correct", "[bytebuffer]") {
         WHEN("we write write the sextuple to the buffer") {
             buffer.write(sextuple, 6);
             THEN(" the remaining max_writable is a defined value") {
-                REQUIRE(buffer.max_writable() == 18);
+                REQUIRE(buffer.max_writable() == 24);
             }
         }
     }

@@ -361,10 +361,12 @@ namespace iotdb {
             return _bytes.capacity();
         }
         template <typename T> void basic_bytebuffer<T>::set_order(const tsfile::encoding::endian_type& order) {
-            _order =order;
+            tsfile::encoding::endian_type current = order;
             for (size_t i = 0; i < _bytes.size(); i++) {
-                order_byte(_bytes[i], _order);
+                order_byte(_bytes[i], current);
             }
+            _order =order;
+
         }
         template <typename T> tsfile::encoding::endian_type basic_bytebuffer<T>::order() const noexcept {
             return _order;
@@ -384,7 +386,6 @@ namespace iotdb {
                 result_byte.fields.six = current_byte.fields.third;
                 result_byte.fields.seven = current_byte.fields.second;
                 result_byte.fields.eight = current_byte.fields.first;
-                _order = order;
             }
             b = result_byte.byte;
         }
