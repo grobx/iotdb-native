@@ -37,7 +37,6 @@ namespace iotdb {
                 int get_number_of_chunks() const;
 
             private:
-                constexpr auto MARKER = iotdb::tsfile::file::CHUNK_GROUP_FOOTER;
                 std::string _device_id;
                 long _data_size;
                 int _number_of_chunks;
