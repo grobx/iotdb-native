@@ -20,6 +20,7 @@
 #define IOTDB__TSFILE__READ__TSFILE__H
 
 #include <fstream>
+#include <filesystem>
 
 #include <util/bytebuffer.h>
 
@@ -35,6 +36,7 @@ private:
     fstream _file_input;
     pos_type _beg;
     pos_type _end;
+    pos_type _cur;
 
 public:
     tsfile(std::filesystem::path path) {
@@ -54,18 +56,20 @@ public:
         return _end;
     }
 
+    pos_type cur() {
+        return _cur;
+    }
+
     size_t size() {
         return _end - _beg;
     }
 
-    void position(pos_type pos) {
+    void pos(pos_type pos) {
         _file_input.seekg(pos);
     }
 
     void read(util::bytebuffer& buf) {
-        std::string tmpbuf(buf.size(), '\0');
-        _file_input.read(&tmpbuf[0], tmpbuf.size());
-        std::copy(tmpbuf.begin(), tmpbuf.end(), buf.begin());
+        _file_input.read(&buf[0], buf.size());
     }
 
     void read(util::bytebuffer& buf, pos_type position) {

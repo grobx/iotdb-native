@@ -41,4 +41,8 @@ target_link_libraries(test03-sequence_reader ${LINK_DEPENDENCIES})
 add_test("Should_XXX" test03-sequence_reader)
 configure_file("TsFileSequenceReaderTest.tsfile" "TsFileSequenceReaderTest.tsfile" COPYONLY)
 
+add_executable(test04-bitset util/bitset.cpp)
+target_link_libraries(test04-bitset ${LINK_DEPENDENCIES})
+add_test("Bitset_Should_Work" test04-bitset)
+
 include(CTest)

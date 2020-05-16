@@ -65,6 +65,7 @@ namespace iotdb {
             std::vector<T> _bytes;
             size_t _reader_index = 0;
             size_t _writer_index = 0;
+            size_t _limit = 0;
             std::mutex _buffermutex;
             tsfile::encoding::endian_type _order = tsfile::encoding::endian_type::IOTDB_BIG_ENDIAN;
         public:
@@ -90,6 +91,11 @@ namespace iotdb {
              */
             basic_bytebuffer(const std::initializer_list<T>& bytes);
             /**
+             * Move constructor
+             * @param bytes
+             */
+            basic_bytebuffer(const internal_buffer&& bytes): _bytes{bytes} {}
+            /**
              * discard all files that has been read.
              */
             void discard_bytes();
@@ -108,8 +114,7 @@ namespace iotdb {
              * iterator in the buffer
              * @return an iterator to the end of the given container c
              */
-            iterator end() noexcept { return _bytes.end(); }
-
+            iterator end() noexcept { return _bytes.end() - _limit; }
             /**
              * iterator constant to the buffer
              * @return a constant iterator to the beginning of the given container c
@@ -119,27 +124,32 @@ namespace iotdb {
              * iterator constant to the buffer
              * @return a constant iterator to the end of the buffer
              */
-            const_iterator cend() const noexcept  { return  _bytes.cend(); }
+            const_iterator cend() const noexcept  { return  _bytes.cend() - _limit; }
             /**
              * reverse iterator to the begin of the buffer
              * @return reverse iterator to the end of the buffer
              */
-            reverse_iterator rbegin() const noexcept { return _bytes.rbegin(); }
+            reverse_iterator rbegin() noexcept { return _bytes.rbegin() + _limit; }
             /**
              * reverse iterator to the end of the buffer
              * @return reverse iterator to the end of the buffer
              */
-            reverse_iterator rend() const noexcept  { return  _bytes.rend(); }
+            reverse_iterator rend() noexcept  { return  _bytes.rend(); }
             /**
              * constant reverse iterator to the begin of the buffer
              * @return constant reverse iterator to the end of the buffer
              */
-            const_reverse_iterator  crbegin() const noexcept { return _bytes.crbegin(); }
+            const_reverse_iterator  crbegin() const noexcept { return _bytes.crbegin() + _limit; }
             /**
              * constant reverse iterator to the begin of the buffer
              * @return constant reverse iterator to the end of the buffer
              */
             const_reverse_iterator crend() const noexcept { return _bytes.crend(); }
+            /**
+             * set a logical end limit
+             * @param limit
+             */
+            void limit(size_t limit);
             /**
              * Read as single byte
              * @return byte read from the buffer
@@ -269,6 +279,13 @@ namespace iotdb {
                 return 0;
             }
             return _writer_index - _reader_index;
+        }
+        template <typename T> void basic_bytebuffer<T>::limit (size_t limit) {
+            // FIXME: finish implementation
+            if (limit < 0 || limit > _bytes.capacity()) {
+                throw std::invalid_argument("limit must be non-negative and above capacity");
+            }
+            _limit = limit;
         }
         template <typename T> void basic_bytebuffer<T>::read(T& s, std::streamsize n) {
             auto data = read_n(n);
