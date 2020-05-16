@@ -14,6 +14,7 @@
 
 #include "../catch.hpp"
 #include <util/bytebuffer.h>
+#include <iostream>
 using namespace iotdb::util;
 
 SCENARIO( "bytebuffer should be initialized correctly", "[bytebuffer]" ) {
@@ -37,10 +38,28 @@ SCENARIO("Changing the byte order of the buffer", "[bytebuffer]") {
         WHEN("we ask to change to bigendian") {
             buffer.set_order(iotdb::tsfile::encoding::endian_type::IOTDB_BIG_ENDIAN);
             THEN(" the order change is performed correctly") {
-
+                auto new_order = buffer.read_all();
+                char byte1 = -128;
+                char byte2 = -104;
+                char byte3 = 4;
+                REQUIRE(byte1 == new_order[0]);
+                REQUIRE(byte2 == new_order[1]);
+                REQUIRE(byte3 == new_order[2]);
             }
         }
     }
+}
+SCENARIO(" Assuring capacity of the buffer", "[bytebuffer]") {
+      GIVEN("a bytebuffer with predefined size ") {
+          bytebuffer buffer(10);
+          WHEN("we ask to ensure the size") {
+              THEN(" we double the capacity") {
+                  size_t capacity = buffer.capacity();
+                  buffer.ensure_space();
+                  REQUIRE(capacity *2 == buffer.capacity());
+              }
+          }
+      }
 }
 SCENARIO( "Iterating a bytebuffer should work", "[bytebuffer]") {
     bytebuffer buffer {1, 2, 3, 4, 7, 8};

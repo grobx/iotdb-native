@@ -16,6 +16,13 @@
 # specific language governing permissions and limitations
 # under the License.
 #
+find_package(JNI)
+
+if (JNI_FOUND)
+    message (STATUS "JNI_INCLUDE_DIRS=${JNI_INCLUDE_DIRS}")
+    message (STATUS "JNI_LIBRARIES=${JNI_LIBRARIES}")
+endif()
+
 if(WIN32)
     # we support just windows 10
     set(LINK_DEPENDENCIES catch_lib)
