@@ -8,26 +8,23 @@ namespace iotdb {
         namespace encoding {
 
             template<typename Kind>
-            class abstract_encoder {
+            class abstract_decoder {
             public:
                 constexpr MAX_STRING_LENGTH = "max_string_length";
                 constexpr MAX_POINT_NUMBER = "max_point_number";
-                abstract_encoder(): _type(iotdb::file::metadata::ts_encoding::PLAIN) {}
-                abstract_encoder(const iotdb::file::metadata::ts_encoding& type,
-                        const iotdb::tsfile::encoding::endian_type& endianess= iotdb::tsfile::encoding::endian_type::IOTDB_LITTLE_ENDIAN)
-                : _type(type), _endianess(endianess){}
-                template<typename T> std::error_code &encode<T>(std::ostream &os) const {
+                abstract_decoder(): _type(iotdb::file::metadata::ts_encoding::PLAIN) {}
+                abstract_decoder(const iotdb::file::metadata::ts_encoding& type) : _type(type){}
+                template<typename T> std::error_code &decode<T>(std::ostream &os) const {
                     return static_cast<const Kind *>(this)->encode<T>(os);
                 }
-                template<typename T> std::error_code &encode<T>(util::bytebuffer& buffer) const {
+                template<typename T> std::error_code &decode<T>(util::bytebuffer& buffer) const {
                     return static_cast<const Kind *>(this)->encode<T>(os);
                 }
-                void flush(util::bytebuffer& buffer) const {
-                     static_cast<const Kind *>(this)->flush(util::bytebuffer& buffer);
+                iotdb::tsfile::encoding::endian_type get_endian() const {
+                    return _endianess;
                 }
-                void flush(std::ostream& os) const {
-                    static_cast<const Kind *>(this)->flush(os);
-
+                void set_endian(const iotdb::tsfile::encoding::endian_type& endian) {
+                    _endianess = endian;
                 }
                 iotdb::file::metadata::ts_encoding get_type() const {
                     return _type;
