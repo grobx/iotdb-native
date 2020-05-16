@@ -23,9 +23,9 @@
 namespace iotdb {
     namespace tsfile {
         namespace file {
-            namespace header {
 
-                using namespace iotdb::tsfile::file::metadata;
+
+                using namespace iotdb::tsfile::file;
 
                 /**
                  * Construct a chunk header
@@ -38,9 +38,9 @@ namespace iotdb {
                  */
                 chunk_header::chunk_header(const std::string& measurementID,
                                            int dataSize,
-                                           metadata::ts_datatype dataType,
-                                           metadata::compression_type compressionType,
-                                           metadata::ts_encoding encoding,
+                                           ts_datatype dataType,
+                                           compression_type compressionType,
+                                           ts_encoding encoding,
                                            int numOfPages) : _measurement_id(measurementID),
                                                              _data_size(dataSize),
                                                              _datatype(dataType),
@@ -157,5 +157,4 @@ namespace iotdb {
                 }
             }
         }
-    }
 }

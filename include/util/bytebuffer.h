@@ -178,7 +178,7 @@ namespace iotdb {
              * @return  order
              */
 
-            tsfile::encoding::endian_type order() const noexcept ;
+            tsfile::encoding::endian_type order()  const noexcept ;
 
             /**
              * Write a single byte
@@ -233,7 +233,9 @@ namespace iotdb {
             const T &operator[](std::size_t idx) const;
 
         private:
-            void order_byte(int8_t & b, tsfile::encoding::endian_type& order) const noexcept;
+            void order_byte(int8_t &b, tsfile::encoding::endian_type &order) noexcept ;
+
+
         };
         typedef basic_bytebuffer<iotdb::value_type> bytebuffer;
 
@@ -346,7 +348,7 @@ namespace iotdb {
             return _order;
         }
         template <typename T> void basic_bytebuffer<T>::order_byte(int8_t & b,
-                tsfile::encoding::endian_type& order) const noexcept {
+                tsfile::encoding::endian_type& order)  noexcept {
             const int value { 0x01 };
             const void * address = static_cast<const void *>(&value);
             const unsigned char * least_significant_address = static_cast<const unsigned char *>(address);

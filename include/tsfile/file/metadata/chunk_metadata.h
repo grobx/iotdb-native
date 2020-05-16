@@ -27,12 +27,10 @@
 #include <tsfile/file/metadata/metadata.h>
 #include <tsfile/file/metadata/statistics.h>
 
-namespace metadata = iotdb::tsfile::file::metadata;
 
 namespace iotdb {
     namespace tsfile {
         namespace file {
-            namespace metadata {
                 class chunk_metadata {
                 public:
                     /**
@@ -43,9 +41,9 @@ namespace iotdb {
                      * @param statistics
                      */
                     chunk_metadata(const std::string &measurementUid,
-                                   const metadata::ts_datatype &datatype,
+                                   const ts_datatype &datatype,
                                    int64_t fileOffset,
-                                   const metadata::statistics& stat);
+                                   const statistics& stat);
                     /**
                      *
                      * @param buffer
@@ -63,7 +61,7 @@ namespace iotdb {
                     /**
                      *
                      */
-                    friend std::ostream &operator<<(std::ostream &os, const metadata::chunk_metadata &p);
+                    friend std::ostream &operator<<(std::ostream &os, const chunk_metadata &p);
 
                 private:
                     std::string _measurementUid;
@@ -86,10 +84,9 @@ namespace iotdb {
                     bool _modified;
                 };
 
-                std::ostream &operator<<(std::ostream &os, const metadata::chunk_metadata &p);
+                std::ostream &operator<<(std::ostream &os, const chunk_metadata &p);
 
             };
         }
-    }
 }
 #endif //IOTDB_NATIVE_CHUNK_METADATA_H

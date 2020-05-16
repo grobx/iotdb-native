@@ -37,7 +37,7 @@ class sequence_reader {
     int32_t _metadata_size;
     std::size_t _metadata_pos;
     encoding::endian_type _endian_type = encoding::endian_type::IOTDB_BIG_ENDIAN;
-    std::shared_ptr<file::metadata::file_metadata> _file_metadata;
+    std::shared_ptr<iotdb::tsfile::file::file_metadata> _file_metadata;
 
 public:
     sequence_reader(std::filesystem::path path): sequence_reader(path, true) {}
@@ -109,11 +109,11 @@ public:
         return _endian_type;
     }
 
-    std::shared_ptr<file::metadata::file_metadata> read_file_metadata() {
+    std::shared_ptr<iotdb::tsfile::file::file_metadata> read_file_metadata() {
         if (_file_metadata == nullptr) {
             util::bytebuffer buf(_metadata_size);
             _tsfile_input.read(buf, _metadata_pos);
-            _file_metadata = std::make_shared<file::metadata::file_metadata>(buf);
+            _file_metadata = std::make_shared<iotdb::tsfile::file::file_metadata>(buf);
         }
         return _file_metadata;
     }

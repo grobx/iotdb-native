@@ -4,9 +4,6 @@
 namespace iotdb {
     namespace tsfile {
         namespace file {
-            namespace metadata {
-                using ts_datatype = iotdb::tsfile::file::metadata::ts_datatype;
-
                 /**
                  *
                  * @param measurementUid
@@ -17,7 +14,7 @@ namespace iotdb {
                 chunk_metadata::chunk_metadata(const std::string &measurementUid,
                                                const ts_datatype &datatype,
                                                int64_t fileOffset,
-                                               const metadata::statistics &stat) {
+                                               const statistics &stat) {
 
                 }
 
@@ -47,9 +44,6 @@ namespace iotdb {
                     return fs;
                 }
                  */
-
-
             }
         }
-    }
 }

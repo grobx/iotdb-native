@@ -15,21 +15,72 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+#include <iostream>
+#include <util/bytebuffer.h>
 #include <tsfile/file/header/page_header.h>
+
 namespace iotdb {
     namespace tsfile {
         namespace file {
-            namespace header {
-                page_header::page_header(int uncompressed_size,
-                            int compressed_size,
-                            const iotdb::tsfile::file::metadata::statistics& stat,
-                            bool modified): _uncompressed(uncompressed_size),
-                                            _compressed_size(compressed_size),
-                                            _statistics(stat),
-                                            _modified(modified) {
+            page_header::page_header(int uncompressed_size,
+                                     int compressed_size,
+                                     const iotdb::tsfile::file::statistics &stat,
+                                     bool modified) : _uncompressed_size(uncompressed_size),
+                                                      _compressed_size(compressed_size),
+                                                      _statistics(stat),
+                                                      _modified(modified) {
 
-                    }
+
             }
-        }
+
+            void page_header::set_uncompressed_size(int uncompressed) noexcept {
+                _uncompressed_size = uncompressed;
+            }
+
+            int page_header::get_uncompressed_size() const noexcept {
+                return _uncompressed_size;
+            }
+
+            iotdb::tsfile::file::statistics page_header::get_statistics() const noexcept {
+                return _statistics;
+            }
+
+            void page_header::set_statistics(const iotdb::tsfile::file::statistics &statistics) {
+                _statistics = statistics;
+            }
+
+            bool page_header::is_modified() const noexcept {
+                return _modified;
+            }
+
+            void page_header::set_modified(bool modified) noexcept {
+                _modified = modified;
+            }
+
+            /**
+             * Serialize an chunk header to a buffer
+             * @param buffer
+             * @return
+             */
+            size_t page_header::to_buffer(iotdb::util::bytebuffer &buffer) const {
+                return 0;
+            }
+
+            /**
+             * Convert the header to the corresponding string
+             * @return convert string representation of the header
+             */
+            std::string page_header::str() const {
+                std::ostringstream out;
+                out << "PageHeader{uncompressedSize=";
+                out << _uncompressed_size;
+                out << ", compressedSize=";
+                out << _compressed_size;
+                out << ", statistics=";
+                out << _statistics;
+                out << "}";
+                return out.str();
+            }
+        };
     }
 }

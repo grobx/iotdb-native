@@ -22,7 +22,6 @@
 #define THEN_NO_VALUE_IN(expr) THEN( "no value will be returned" ) { REQUIRE( !expr.has_value() ); }
 
 namespace rwio = iotdb::util::rwio;
-namespace metadata = iotdb::tsfile::file::metadata;
 
 SCENARIO( "rwio can read bool", "[rwio]" ) {
     GIVEN( "a buffer stream with content: {1}" ) {
@@ -206,29 +205,29 @@ SCENARIO( "rwio can read enums", "[rwio]" ) {
         iotdb::util::bytebuffer bstream({0,2});
 
         WHEN( "we read a compression_type" ) {
-            std::optional<metadata::compression_type> x =
-                rwio::read<metadata::compression_type>(bstream);
+            std::optional<iotdb::tsfile::file::compression_type> x =
+                rwio::read<iotdb::tsfile::file::compression_type>(bstream);
 
             THEN( "we got compression_type::GZIP" ) {
-                REQUIRE( metadata::compression_type::GZIP == x.value() );
+                REQUIRE( iotdb::tsfile::file::compression_type::GZIP == x.value() );
             }
         }
 
         WHEN( "we read a ts_datatype" ) {
-            std::optional<metadata::ts_datatype> x =
-                rwio::read<metadata::ts_datatype>(bstream);
+            std::optional<iotdb::tsfile::file::ts_datatype> x =
+                rwio::read<iotdb::tsfile::file::ts_datatype>(bstream);
 
             THEN( "we got ts_datatype::INT64" ) {
-                REQUIRE( metadata::ts_datatype::INT64 == x.value() );
+                REQUIRE( iotdb::tsfile::file::ts_datatype::INT64 == x.value() );
             }
         }
 
         WHEN( "we read a ts_encoding" ) {
-            std::optional<metadata::ts_encoding> x =
-                rwio::read<metadata::ts_encoding>(bstream);
+            std::optional<iotdb::tsfile::file::ts_encoding> x =
+                rwio::read<iotdb::tsfile::file::ts_encoding>(bstream);
 
             THEN( "we got ts_encoding::INT64" ) {
-                REQUIRE( metadata::ts_encoding::RLE == x.value() );
+                REQUIRE( iotdb::tsfile::file::ts_encoding::RLE == x.value() );
             }
         }
     }

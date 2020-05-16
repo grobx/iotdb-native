@@ -27,8 +27,7 @@
 
 namespace rwio = iotdb::util::rwio;
 
-namespace iotdb { namespace tsfile { namespace file { namespace metadata {
-
+namespace iotdb { namespace tsfile { namespace file {
 class device_metadata_index {
 public:
     device_metadata_index(util::bytebuffer& buf) {
@@ -94,6 +93,6 @@ public:
     }
 };
 
-}}}}
+}}}
 
 #endif // IOTDB__TSFILE__FILE__METADATA__FILE_METADATA__H

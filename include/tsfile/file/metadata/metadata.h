@@ -22,7 +22,6 @@
 namespace iotdb {
     namespace tsfile {
         namespace file {
-            namespace metadata {
                 enum class compression_type {
                     UNCOMPRESSED, SNAPPY, GZIP, LZO, SDT, PAA, PLA
                 };
@@ -33,7 +32,6 @@ namespace iotdb {
                     PLAIN, PLAIN_DICTIONARY, RLE, DIFF, TS_2DIFF, BITMAP, GORILLA, REGULAR
                 };
             }
-        }
     }
 }
 

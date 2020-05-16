@@ -29,10 +29,7 @@
 namespace iotdb {
     namespace tsfile {
         namespace file {
-            namespace header {
 
-                namespace metadata = iotdb::tsfile::file::metadata;
-                namespace header = iotdb::tsfile::file::header;
                 namespace rwio = iotdb::util::rwio;
 
                 /**
@@ -51,9 +48,9 @@ namespace iotdb {
                      * @param numOfPages        numeber of pages
                      */
                     chunk_header(const std::string& measurementID,int dataSize,
-                                metadata::ts_datatype dataType,
-                                metadata::compression_type compressionType,
-                                metadata::ts_encoding encoding,
+                                ts_datatype dataType,
+                                compression_type compressionType,
+                                ts_encoding encoding,
                                 int numOfPages);
 
                     /**
@@ -62,7 +59,7 @@ namespace iotdb {
                      * @param header
                      * @return
                      */
-                    friend std::ostream &operator<<(std::ostream &os, const header::chunk_header &header);
+                    friend std::ostream &operator<<(std::ostream &os, const chunk_header &header);
                     /**
                      * Serialize an chunk header to a buffer
                      * @param buffer
@@ -89,31 +86,31 @@ namespace iotdb {
                      * Get the compression type.
                      * @return compression type
                      */
-                    metadata::compression_type get_compression_type() const;
+                    compression_type get_compression_type() const;
                     /**
                      * Set the compression type
                      * @param type of the compression.
                      */
-                    void set_compression_type(const metadata::compression_type &type);
+                    void set_compression_type(const compression_type &type);
                     /**
                      * Get the time series data type
                      * @return time series data type
                      */
-                    metadata::ts_datatype get_ts_datatype() const;
+                    ts_datatype get_ts_datatype() const;
                     /**
                      * Set the time series data type
                      */
-                    void set_ts_datatype(const metadata::ts_datatype &type);
+                    void set_ts_datatype(const ts_datatype &type);
                     /**
                      * Get the time series data type
                      * @return time series encoding.
                      */
-                    metadata::ts_encoding get_ts_encoding() const;
+                    ts_encoding get_ts_encoding() const;
                     /**
                      * Set the time series encoding
                      * @param type series encoding
                      */
-                    void set_ts_encoding(const metadata::ts_encoding &type);
+                    void set_ts_encoding(const ts_encoding &type);
                     /**
                      * Get number of pages
                      * @return current number of pages.
@@ -134,12 +131,12 @@ namespace iotdb {
                 private:
                     std::string _measurement_id;
                     int _data_size;
-                    metadata::ts_datatype _datatype;
-                    metadata::compression_type _compression_type;
-                    metadata::ts_encoding _encoding_type;
+                    ts_datatype _datatype;
+                    compression_type _compression_type;
+                    ts_encoding _encoding_type;
                     int _num_of_pages;
                 };
-                std::ostream &operator<<(std::ostream &os, const header::chunk_header &header) {
+                std::ostream &operator<<(std::ostream &os, const chunk_header &header) {
                        rwio::write<int8_t>(iotdb::tsfile::file::CHUNK_HEADER, os);
                        rwio::write<std::string>(header.get_measurement_id(), os);
                        rwio::write<int8_t>(header.get_data_size(), os);
@@ -174,9 +171,9 @@ namespace iotdb {
                         // ok we can return the correct header
                         return std::make_unique<chunk_header>(measurement_id,
                                                               data_size,
-                                                              static_cast<metadata::ts_datatype>(data),
-                                                              static_cast<metadata::compression_type>(compression),
-                                                              static_cast<metadata::ts_encoding>(encoding),
+                                                              static_cast<ts_datatype>(data),
+                                                              static_cast<compression_type>(compression),
+                                                              static_cast<ts_encoding>(encoding),
                                                               num_pages);
 
                     } else {
@@ -185,6 +182,6 @@ namespace iotdb {
                 }
             }
         }
-    }
 }
+
 #endif //IOTDB_NATIVE_CHUNK_HEADER_H
