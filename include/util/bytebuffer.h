@@ -91,6 +91,11 @@ namespace iotdb {
              */
             basic_bytebuffer(const std::initializer_list<T>& bytes);
             /**
+             * Move constructor
+             * @param bytes
+             */
+            basic_bytebuffer(const internal_buffer&& bytes): _bytes{bytes} {}
+            /**
              * discard all files that has been read.
              */
             void discard_bytes();
