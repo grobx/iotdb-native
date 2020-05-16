@@ -17,6 +17,7 @@
  * under the License.
  */
 #include <tsfile/file/footer/chunk_group_footer.h>
+#include <util/rwio.h>
 
 namespace iotdb {
     namespace tsfile {
@@ -42,10 +43,10 @@ namespace iotdb {
              */
             size_t chunk_group_footer::to_buffer(iotdb::util::bytebuffer &buffer) const {
                 size_t length = 0;
-                length+=rwio::write<int8_t>(iotdb::tsfile::file::CHUNK_GROUP_FOOTER, buffer);
-                length+=rwio::write<std::string>(_device_id, buffer);
-                length+=rwio::write<int>(_data_size, buffer);
-                length+=rwio::write<int>(_number_of_chunks, buffer);
+                length+=util::rwio::write<int8_t>(iotdb::tsfile::file::CHUNK_GROUP_FOOTER, buffer);
+                length+=util::rwio::write<std::string>(_device_id, buffer);
+                length+=util::rwio::write<int>(_data_size, buffer);
+                length+=util::rwio::write<int>(_number_of_chunks, buffer);
                 return length;
             }
         }
