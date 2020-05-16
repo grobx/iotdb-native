@@ -47,7 +47,7 @@ namespace iotdb {
                      * @param encoding          type of encoding
                      * @param numOfPages        numeber of pages
                      */
-                    chunk_header(const std::string& measurementID,int dataSize,
+                    explicit chunk_header(const std::string& measurementID,int dataSize,
                                 ts_datatype dataType,
                                 compression_type compressionType,
                                 ts_encoding encoding,

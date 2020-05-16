@@ -40,7 +40,7 @@ namespace iotdb {
                      * @param fileOffset
                      * @param statistics
                      */
-                    chunk_metadata(const std::string &measurementUid,
+                    explicit chunk_metadata(const std::string &measurementUid,
                                    const ts_datatype &datatype,
                                    int64_t fileOffset,
                                    const statistics& stat);

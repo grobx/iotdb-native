@@ -32,6 +32,13 @@ namespace iotdb {
         namespace file {
             class page_header {
             public:
+                /**
+                 *
+                 * @param uncompressed_size
+                 * @param compressed_size
+                 * @param stat
+                 * @param modified
+                 */
                 explicit page_header(int uncompressed_size,
                                      int compressed_size,
                                      const iotdb::tsfile::file::statistics &stat,

@@ -58,7 +58,7 @@ namespace iotdb {
                 std::unique_ptr<utils::bloom_filter> _bloom_filter;
 
             public:
-                file_metadata(util::bytebuffer &buf) {
+                explicit file_metadata(util::bytebuffer &buf) {
                     int32_t size;
 
                     size = rwio::read<int32_t>(buf).value_or(-1);

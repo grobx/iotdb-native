@@ -40,16 +40,16 @@ class sequence_reader {
     std::shared_ptr<iotdb::tsfile::file::file_metadata> _file_metadata;
 
 public:
-    sequence_reader(std::filesystem::path path): sequence_reader(path, true) {}
+    explicit sequence_reader(std::filesystem::path path): sequence_reader(path, true) {}
 
-    sequence_reader(std::filesystem::path path, bool load_metadata_size_): _tsfile_input{path} {
+    explicit sequence_reader(std::filesystem::path path, bool load_metadata_size_): _tsfile_input{path} {
         _metadata_size = -1;
         _metadata_pos = -1;
         if (load_metadata_size_) {
             load_metadata_size();
         }
     }
-
+    // here you have to handle any possibily error
     void load_metadata_size() {
         if (MAGIC_STRING == read_tail_magic()) {
             int read_size = MAGIC_STRING.size() + sizeof(int32_t);
@@ -59,6 +59,7 @@ public:
             //metadataSize.flip();
             _metadata_size = rwio::read<int32_t>(metadata_size).value_or(-1);
             _metadata_pos = offset - std::streamoff(_metadata_size) - _tsfile_input.beg();
+
         }
     }
 
@@ -91,21 +92,21 @@ public:
         return std::string(head_magic.begin(), head_magic.end());
     }
 
-    int32_t metadata_size() {
+    int32_t metadata_size() const {
         return _metadata_size;
     }
 
-    std::size_t metadata_pos() {
+    std::size_t metadata_pos() const {
         return _metadata_pos;
     }
 
-    bool is_complete() {
+    bool is_complete()  {
         return
             _tsfile_input.size() >= MAGIC_STRING.size()*2 + VERSION_NUMBER.size() &&
             read_tail_magic() == read_head_magic();
     }
 
-    encoding::endian_type endian_type() {
+    encoding::endian_type endian_type() const {
         return _endian_type;
     }
 
