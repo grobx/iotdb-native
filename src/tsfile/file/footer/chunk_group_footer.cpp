@@ -22,7 +22,7 @@
 namespace iotdb {
     namespace tsfile {
         namespace file {
-            explicit chunk_group_footer::chunk_group_footer(const std::string &device_id, long data_size, int number_of_chunks)
+            chunk_group_footer::chunk_group_footer(const std::string &device_id, long data_size, int number_of_chunks)
                     : _device_id(device_id),
                       _data_size(data_size), _number_of_chunks(number_of_chunks) {
             }
