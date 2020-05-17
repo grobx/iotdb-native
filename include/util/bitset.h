@@ -25,41 +25,43 @@
 #include <util/bytebuffer.h>
 #include <util/rwio.h>
 
-#include <iostream>
-
 namespace iotdb { namespace util {
 
 class bitset : public std::vector<bool> {
 
+public:
     template<size_t Size>
-    void inline push_bitset(std::vector<bool>& v, std::bitset<Size>& x) {
-        v.resize(v.size() + Size);
-        for (size_t i = Size; i > 0; --i) {
-            v[i-1] = x[i];
+    static void inline push_bitset(std::vector<bool>& v, std::bitset<Size>& x) {
+        size_t size = v.size();
+        size_t new_size = size + Size;
+        v.resize(new_size);
+        for (size_t i = 0; i < Size; ++i) {
+            v[size+i] = x[i];
         }
     }
 
-public:
     bitset(util::bytebuffer&& buf) {
         // TODO? buf = buf.slice()
-        // FIXME buf.set_order(tsfile::encoding::endian_type::IOTDB_LITTLE_ENDIAN);
+        buf.set_order(tsfile::encoding::endian_type::IOTDB_LITTLE_ENDIAN);
         int n;
-        auto found = std::find_if(buf.rbegin(), buf.rend(), [](const auto c) {return c != 0;});
+        auto found = std::find_if(buf.rbegin(), buf.rend(), [](const auto c) {
+            return c != 0;
+        });
         if (found != buf.rend()) {
             n = std::distance(found, buf.rend()); // -1;
         } else {
             n = 0;
         }
         buf.limit(n);
-        reserve(((n + 7) / 8) * 8);
+//        reserve(((n + 7) / 8) * 64);
         std::bitset<64> data;
         while (buf.remaining() >= 8) {
             data = rwio::read<int64_t>(buf).value();
             push_bitset(*this, data);
         }
         data = 0;
-        for (int remaining = buf.remaining(), j=0; j<remaining; j++) {
-            data |= (buf.read() & 0xffL) << (8 * j);
+        for (int remaining = buf.remaining(), i=0; i<remaining; ++i) {
+            data |= buf.read() << (8 * i);
         }
         if (data != 0) {
             push_bitset(*this, data);

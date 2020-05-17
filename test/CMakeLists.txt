@@ -16,7 +16,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-find_package(JNI REQUIRED)
+#find_package(JNI)
 
 if (JNI_FOUND)
     message (STATUS "JNI_INCLUDE_DIRS=${JNI_INCLUDE_DIRS}")
@@ -49,7 +49,7 @@ add_test("Should_ReadWriteFromSequenceReader" test03-sequence_reader)
 configure_file("TsFileSequenceReaderTest.tsfile" "TsFileSequenceReaderTest.tsfile" COPYONLY)
 
 add_executable(test04-bitset util/bitset.cpp)
-target_link_libraries(test04-bitset ${LINK_DEPENDENCIES} ${JNI_LIBRARIES})
+target_link_libraries(test04-bitset ${LINK_DEPENDENCIES}) # ${JNI_LIBRARIES})
 target_include_directories(test04-bitset PUBLIC ${JNI_INCLUDE_DIRS})
 add_test("Should_BitSet_Work" test04-bitset)
 

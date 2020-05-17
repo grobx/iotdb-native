@@ -143,8 +143,8 @@ SCENARIO( "rwio can read float", "[rwio]" ) {
 }
 
 SCENARIO( "rwio can read double", "[rwio]" ) {
-    GIVEN( "a buffer stream with content: {64,9,33,125,84,68,45,24}" ) {
-        iotdb::util::bytebuffer bstream({64, 9, 33, -5, 84, 68, 45, 24});
+    GIVEN( "a buffer stream with content: {64,9,33,-5,84,68,45,24}" ) {
+        iotdb::util::bytebuffer bstream({64, 9, 33, -5 /*251u*/, 84, 68, 45, 24});
 
         WHEN( "we read a double from buffer stream" ) {
             std::optional<double_t> x = rwio::read<double_t>(bstream);
