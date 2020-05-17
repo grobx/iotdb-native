@@ -20,12 +20,12 @@
 #include <jni.h>       /* where everything is defined */
 #include <string>
 class java_executor {
-    public
+public:
     java_executor();
     std::string execute_method(const std::string& className, const std::string& method);
     ~java_executor();
 private:
-    JavaVMOption* options
+    JavaVMOption* options;
     JavaVM *jvm;       /* denotes a Java VM */
     JNIEnv *env;       /* pointer to native method interface */
     JavaVMInitArgs vm_args; /* JDK/JRE 10 VM initialization arguments */

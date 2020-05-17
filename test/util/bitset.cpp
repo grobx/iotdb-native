@@ -15,6 +15,7 @@
 #include "../catch.hpp"
 
 #include "util/bitset.h"
+#include "java_executor.h"
 
 using namespace iotdb;
 
