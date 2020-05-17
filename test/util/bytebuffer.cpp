@@ -21,13 +21,10 @@ SCENARIO( "bytebuffer should be initialized correctly", "[bytebuffer]" ) {
     GIVEN("a bytebuffer with predefined values") {
         bytebuffer buffer{1,25,32};
         WHEN( "we access to values by index" ) {
-            auto pos1 = buffer[0];
-            auto pos2 = buffer[1];
-            auto pos3 = buffer[2];
             THEN( "the correct values are accessed correctly" ) {
-                REQUIRE( 1 == pos1 );
-                REQUIRE( 25 == pos2 );
-                REQUIRE( 32 == pos3);
+                REQUIRE( 1 == buffer[0] );
+                REQUIRE( 25 == buffer[1] );
+                REQUIRE( 32 == buffer[2]);
             }
         }
     }
@@ -39,19 +36,16 @@ SCENARIO("Changing the byte order of the buffer", "[bytebuffer]") {
             buffer.set_order(iotdb::tsfile::encoding::endian_type::IOTDB_BIG_ENDIAN);
             THEN(" the order change is performed correctly") {
                 auto new_order = buffer.read_all();
-                char byte1 = -128;
-                char byte2 = -104;
-                char byte3 = 4;
-                REQUIRE(byte1 == new_order[0]);
-                REQUIRE(byte2 == new_order[1]);
-                REQUIRE(byte3 == new_order[2]);
+                REQUIRE(0 == new_order[0]);
+                REQUIRE(48 == new_order[1]);
+                REQUIRE(8 == new_order[2]);
             }
         }
     }
 }
 SCENARIO("Changing size assure max writable correct", "[bytebuffer]") {
     GIVEN( " a byte buffer with capacity and a sextuple") {
-        char sextuple[] = {3, 4, 5, 6, 7, 8};
+        iotdb::value_type sextuple[] = {3, 4, 5, 6, 7, 8};
         bytebuffer buffer(12); // writer_index = n/2 => 6
         WHEN("we write write the sextuple to the buffer") {
             buffer.write(sextuple, 6);
@@ -101,7 +95,7 @@ SCENARIO("We should be able to write and read correctly in a byte buffer") {
             for(int i = 0; i < 3; i++) {
                 buffer[i] = i;
             }
-            std::vector<char> data = buffer.read_all();
+            std::vector<iotdb::value_type> data = buffer.read_all();
             REQUIRE( 0 == data[0]);
             REQUIRE( 1 == data[1]);
             REQUIRE( 2 == data[2]);

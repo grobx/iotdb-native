@@ -38,23 +38,6 @@
 namespace iotdb {
     namespace util {
 
-        typedef struct bitfield
-        {
-            unsigned first     : 1;
-            unsigned second    : 1;
-            unsigned third     : 1;
-            unsigned fourth    : 1;
-            unsigned fifth     : 1;
-            unsigned six       : 1;
-            unsigned seven     : 1;
-            unsigned eight     : 1;
-        } bitfield_t;
-
-        typedef union  {
-            int8_t byte;
-            bitfield_t fields;
-        } fbyte_t;
-
         /**
         * bytebuffer is a thread safe class for a random and sequential accessible sequence of zero or more bytes (octets).
         * The design is based on netty's bytebuf. We use two indexes:
@@ -373,21 +356,14 @@ namespace iotdb {
         }
         template <typename T> void basic_bytebuffer<T>::order_byte(T& b,
                 tsfile::encoding::endian_type& order)  noexcept {
-            fbyte_t current_byte;
-            fbyte_t result_byte;
-            current_byte.byte = b;
-            if (_order != order)
-            {
-                result_byte.fields.first = current_byte.fields.eight;
-                result_byte.fields.second = current_byte.fields.seven;
-                result_byte.fields.third = current_byte.fields.six;
-                result_byte.fields.fourth = current_byte.fields.fifth;
-                result_byte.fields.fifth = current_byte.fields.fourth;
-                result_byte.fields.six = current_byte.fields.third;
-                result_byte.fields.seven = current_byte.fields.second;
-                result_byte.fields.eight = current_byte.fields.first;
+            if (_order != order) {
+                std::bitset<8> x(static_cast<uint8_t>(b));
+                std::bitset<8> y;
+                for (int i=0; i<8; i++) {
+                    y[i] = x[8-i];
+                }
+                b = static_cast<iotdb::value_type>(y.to_ulong());
             }
-            b = result_byte.byte;
         }
 
         template <typename T> const std::string basic_bytebuffer<T>::hex() const {
@@ -406,40 +382,8 @@ namespace iotdb {
         }
         template <typename T>  T& basic_bytebuffer<T>::operator[](std::size_t idx) { return _bytes[idx]; }
         template <typename T> const T&  basic_bytebuffer<T>::operator[](std::size_t idx) const { return _bytes[idx]; }
-
-        template<std::size_t N> std::bitset<N> to_bitset(const iotdb::util::bytebuffer& bytebuffer) {
-            std::bitset<N> data;
-            size_t j = 0;
-            for (auto it = bytebuffer.cbegin(); it != bytebuffer.cend(); ++it) {
-                fbyte_t current_byte;
-                current_byte.byte = *it;
-                for (int k = 0; k < 8; ++k) {
-                    if (bytebuffer.order() == tsfile::encoding::endian_type::IOTDB_BIG_ENDIAN) {
-                            data.set(j, current_byte.fields.eight);
-                            data.set(j+1, current_byte.fields.seven);
-                            data.set(j+2, current_byte.fields.six);
-                            data.set(j+3, current_byte.fields.fifth);
-                            data.set(j+4, current_byte.fields.fourth);
-                            data.set(j+5, current_byte.fields.third);
-                            data.set(j+6, current_byte.fields.second);
-                            data.set(j+7, current_byte.fields.first);
-                    } else {
-                        data.set(j, current_byte.fields.first);
-                        data.set(j+1, current_byte.fields.second);
-                        data.set(j+2, current_byte.fields.third);
-                        data.set(j+3, current_byte.fields.fourth);
-                        data.set(j+4, current_byte.fields.fifth);
-                        data.set(j+5, current_byte.fields.six);
-                        data.set(j+6, current_byte.fields.seven);
-                        data.set(j+7, current_byte.fields.eight);
-                    }
-                }
-                j+=8;
-            }
-            return data;
-        }
         template<std::size_t N> std::array<int8_t ,N> to_array(const iotdb::util::bytebuffer& bytebuffer) {
-            char *data = bytebuffer.read_all().data();
+            iotdb::value_type *data = bytebuffer.read_all().data();
             std::array<int8_t, N> cdata = data;
             return cdata;
         }
