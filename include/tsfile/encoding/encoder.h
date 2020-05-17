@@ -1,5 +1,6 @@
 #ifndef ENCODER_H
 #define ENCODER_H
+#include <string>
 #include <util/bytebuffer.h>
 #include <tsfile/file/metadata/metadata.h>
 
@@ -10,8 +11,8 @@ namespace iotdb {
             template<typename Kind>
             class abstract_encoder {
             public:
-                constexpr MAX_STRING_LENGTH = "max_string_length";
-                constexpr MAX_POINT_NUMBER = "max_point_number";
+                static const std::string MAX_STRING_LENGTH = "max_string_length";
+                static const std::string MAX_POINT_NUMBER = "max_point_number";
                 abstract_encoder(): _type(iotdb::file::metadata::ts_encoding::PLAIN) {}
                 abstract_encoder(const iotdb::file::metadata::ts_encoding& type,
                         const iotdb::tsfile::encoding::endian_type& endianess= iotdb::tsfile::encoding::endian_type::IOTDB_LITTLE_ENDIAN)
