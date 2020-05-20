@@ -12,9 +12,11 @@
 * limitations under the License.
 **/
 
-#include "../catch.hpp"
+#include <catch2/catch.hpp>
+
 #include <util/bytebuffer.h>
 #include <iostream>
+
 using namespace iotdb::util;
 
 SCENARIO( "bytebuffer should be initialized correctly", "[bytebuffer]" ) {

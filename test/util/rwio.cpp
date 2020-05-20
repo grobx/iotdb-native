@@ -12,12 +12,13 @@
 * limitations under the License.
 **/
 
+#include <catch2/catch.hpp>
+
 #include <cmath>
 #include <iostream>
 
-#include "../catch.hpp"
-#include "util/rwio.h"
-#include "util/bytebuffer.h"
+#include <util/rwio.h>
+#include <util/bytebuffer.h>
 
 #define THEN_NO_VALUE_IN(expr) THEN( "no value will be returned" ) { REQUIRE( !expr.has_value() ); }
 

@@ -12,9 +12,9 @@
 * limitations under the License.
 **/
 
-#include "../catch.hpp"
+#include <catch2/catch.hpp>
 
-#include "util/bitset.h"
+#include <util/bitset.h>
 //#include "java_executor.h"
 
 using namespace iotdb;

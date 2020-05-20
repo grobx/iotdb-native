@@ -12,9 +12,9 @@
 * limitations under the License.
 **/
 
-#include "../catch.hpp"
+#include <catch2/catch.hpp>
 
-#include "tsfile/read/sequence_reader.h"
+#include <tsfile/read/sequence_reader.h>
 
 SCENARIO( "create sequence_reader instance", "[sequence_reader]" ) {
     GIVEN( "a path of a tsfile" ) {
