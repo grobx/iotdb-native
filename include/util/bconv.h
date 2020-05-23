@@ -27,7 +27,7 @@
 namespace iotdb { namespace bconv {
 
 template<typename Tp>
-Tp to(util::buffer_window& bytes) {
+Tp to(const util::buffer_window& bytes) {
     Tp v = 0ULL;
     if (iotdb::byte_order == bytes.order()) {
         std::copy(bytes.begin(), bytes.end(),
@@ -40,13 +40,13 @@ Tp to(util::buffer_window& bytes) {
 }
 
 template<>
-bool to(util::buffer_window& bytes) {
+bool to(const util::buffer_window& bytes) {
     uint64_t x = static_cast<uint64_t>(bytes[0]);
     return 1ULL == x;
 }
 
 template<>
-std::string to(util::buffer_window& bytes) {
+std::string to(const util::buffer_window& bytes) {
     return std::string(bytes.begin(), bytes.end());
 }
 

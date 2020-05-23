@@ -30,6 +30,9 @@ namespace iotdb { namespace util {
 
 template <typename It>
 class basic_buffer_window {
+    constexpr static tsfile::encoding::endian_type default_endian =
+            tsfile::encoding::endian_type::IOTDB_BIG_ENDIAN;
+
     It f;
     It l;
     tsfile::encoding::endian_type o;
@@ -42,41 +45,40 @@ public:
 
     explicit basic_buffer_window(
             It first, It last,
-            tsfile::encoding::endian_type order = tsfile::encoding::endian_type::IOTDB_BIG_ENDIAN)
+            const tsfile::encoding::endian_type order = default_endian)
         : f{first}, l{last}, o{order} {}
 
     explicit basic_buffer_window(
             util::bytebuffer& buffer,
-            tsfile::encoding::endian_type order = tsfile::encoding::endian_type::IOTDB_BIG_ENDIAN)
+            const tsfile::encoding::endian_type order = default_endian)
         : basic_buffer_window(buffer.begin(), buffer.end(), order) {}
 
-    iterator begin() const { return iterator(f, o); }
+    iterator begin() const { return iterator(f); }
 
-    iterator end() const { return iterator(l, o); }
+    iterator end() const { return iterator(l); }
 
-    reverse_iterator rbegin() const { return reverse_iterator(std::reverse_iterator(l), o); }
+    reverse_iterator rbegin() const { return reverse_iterator(std::reverse_iterator(l)); }
 
-    reverse_iterator rend() const { return reverse_iterator(std::reverse_iterator(f), o); }
+    reverse_iterator rend() const { return reverse_iterator(std::reverse_iterator(f)); }
 
-    void order(tsfile::encoding::endian_type order) { o = order; }
+    void order(const tsfile::encoding::endian_type order) { o = order; }
 
-    tsfile::encoding::endian_type order() { return o; }
+    tsfile::encoding::endian_type order() const { return o; }
 
     void limit(It limit) { l = limit; }
 
     size_t size() const { return std::distance(f, l); }
 
     std::optional<basic_buffer_window<It>>
-    read_n(size_t len) {
-        if (len <= 0 || len > size()) {
-            return {};
-        }
+    read_n(const size_t len) {
+        if (len == 0 || len > size()) return {};
+
         It oldf = f;
         f += len;
         return basic_buffer_window<It>(oldf, f, o);
     }
 
-    reference operator[](size_t idx) const {
+    reference operator[](const size_t idx) const {
         return *(f + idx);
     }
 };

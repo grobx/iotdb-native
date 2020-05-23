@@ -34,24 +34,23 @@ public:
 
 private:
     It i;
-    tsfile::encoding::endian_type o;
 
 public:
-    explicit basic_iterator(It iterator, tsfile::encoding::endian_type order)
-        : i{iterator}, o{order} {}
+    explicit basic_iterator(const It iterator)
+        : i{iterator} {}
     basic_iterator<It> operator ++ () {
         auto ret = *this;
         ++i;
         return ret;
     }
-    reference operator * () {
+    reference operator * () const {
         return *i;
     }
-    pointer operator & () {
+    pointer operator & () const {
         return *i;
     }
     friend bool operator != (const basic_iterator<It>& lhs, const basic_iterator<It>& rhs) {
-        return lhs.i != rhs.i || lhs.o != rhs.o;
+        return lhs.i != rhs.i;
     }
     friend bool operator == (const basic_iterator<It>& lhs, const basic_iterator<It>& rhs) {
         return !(lhs != rhs);

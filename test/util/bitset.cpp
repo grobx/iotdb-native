@@ -55,7 +55,7 @@ SCENARIO( "bitset", "[bitset]" ) {
         util::bytebuffer bb(contents);
 
         WHEN( "we create a bitset out of it" ) {
-            util::buffer_window bw(bb.begin(), bb.end());
+            util::buffer_window bw(bb);
             util::bitset bits = util::make_bitset(bw);
 
             THEN ( "there are "<<size<<" bits") {

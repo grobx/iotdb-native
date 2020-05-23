@@ -32,10 +32,9 @@ namespace iotdb { namespace util { namespace rwio {
 template<class Stream, class Tp = bool>
 struct impl {
     static std::optional<Tp> read(Stream& bstream) {
-        std::optional <util::buffer_window> res = bstream.read_n(sizeof(Tp));
-        if (!res) {
-            return {};
-        }
+        const auto res = bstream.read_n(sizeof(Tp));
+        if (!res) return {};
+
         return bconv::to<Tp>(res.value());
     }
 
@@ -48,11 +47,12 @@ struct impl {
 template<class Stream>
 struct impl<Stream, std::string> {
     static std::optional<std::string> read(Stream& bstream) {
-        int32_t len = impl<Stream, int32_t>::read(bstream).value_or(-1);
-        std::optional <util::buffer_window> res = bstream.read_n(len);
-        if (!res) {
-            return {};
-        }
+        const auto len = impl<Stream, int32_t>::read(bstream);
+        if (!len) return {};
+
+        const auto res = bstream.read_n(len.value());
+        if (!res) return {};
+
         return bconv::to<std::string>(res.value());
     }
 
@@ -65,8 +65,10 @@ struct impl<Stream, std::string> {
 template<class Stream>
 struct impl<Stream, util::buffer_window> {
     static std::optional<util::buffer_window> read(Stream& bstream) {
-        int32_t len = impl<Stream, int32_t>::read(bstream).value_or(-1);
-        return bstream.read_n(len);
+        const auto len = impl<Stream, int32_t>::read(bstream);
+        if (!len) return {};
+
+        return bstream.read_n(len.value());
     }
 
     static size_t
@@ -79,19 +81,18 @@ struct impl<Stream, util::buffer_window> {
 
 template<typename Tp, typename InputStream>
 std::optional<std::enable_if_t<!std::is_enum_v<Tp> && !std::is_array_v<Tp>, Tp>>
-read(InputStream& bstream) {
-    return impl<InputStream, Tp>::read(bstream);
+read(InputStream& stream) {
+    return impl<InputStream, Tp>::read(stream);
 }
 
 /**( READ ENUMS )**/
 
 template<typename Tp, typename InputStream>
 std::optional<std::enable_if_t<std::is_enum_v<Tp>, Tp>>
-read(InputStream& bstream) {
-    std::optional <int16_t> res = read<int16_t>(bstream);
-    if (!res) {
-        return {};
-    }
+read(InputStream& stream) {
+    const auto res = read<int16_t>(stream);
+    if (!res) return {};
+
     return static_cast<Tp>(res.value());
 }
 
@@ -99,15 +100,14 @@ read(InputStream& bstream) {
 
 template<typename Tp, typename InputStream, typename T = std::remove_extent_t<Tp>>
 std::vector<std::enable_if_t<std::is_array_v<Tp>, T>>
-read(InputStream &bstream) {
-    int32_t len = read<int32_t>(bstream).value_or(0);
-    if (len <= 0) {
-        return {};
-    }
+read(InputStream &stream) {
+    const auto len = read<int32_t>(stream);
+    if (!len) return {};
+
     std::vector <T> res;
-    res.reserve(len);
-    for (int i = 0; i < len; ++i) {
-        res.push_back(read<T>(bstream).value());
+    res.reserve(len.value());
+    for (int i = 0; i < len.value(); ++i) {
+        res.push_back(read<T>(stream).value());
     }
     return res;
 }
