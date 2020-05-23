@@ -33,7 +33,7 @@ class device_metadata_index {
     int64_t _end_time;
 
 public:
-    explicit device_metadata_index(util::bytebuffer& buf) {
+    explicit device_metadata_index(util::buffer_window& buf) {
         _offset = rwio::read<int64_t>(buf).value();
         _len = rwio::read<int32_t>(buf).value();
         _start_time = rwio::read<int64_t>(buf).value();

@@ -19,7 +19,7 @@ class bloom_filter {
     public:
         hash_function(int32_t cap, int32_t seed): _cap{cap}, _seed{seed} {}
 
-        int32_t hash(const char* str) { return 0; }
+        int32_t hash(const char* /*str*/) { return 0; }
         // TODO: return Math.abs(Murmur128Hash.hash(value, seed)) % cap
     };
 
@@ -33,7 +33,7 @@ class bloom_filter {
     funcs_type _func;
 
 public:
-    bloom_filter(container_type& bs, int32_t fs, int32_t hfs)
+    bloom_filter(util::buffer_window& bs, int32_t fs, int32_t hfs)
         : _bits{bs}
         , _size{fs}
         , _hash_function_size{static_cast<funcs_type::size_type>(std::max(MAXIMAL_HASH_FUNCTION_SIZE, hfs))}

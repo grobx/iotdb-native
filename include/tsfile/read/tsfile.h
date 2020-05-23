@@ -75,7 +75,7 @@ public:
     void read(util::bytebuffer& buf, pos_type position) {
         pos_type cur = _file_input.tellg();
         _file_input.seekg(position);
-        _file_input.read(&buf[0], buf.size());
+        read(buf);
         _file_input.seekg(cur);
     }
 };

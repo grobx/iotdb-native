@@ -38,7 +38,7 @@ class measurement_schema {
     std::unordered_map<std::string, std::string> _props;
 
 public:
-    measurement_schema(util::bytebuffer& buf) {
+    measurement_schema(util::buffer_window& buf) {
         _measurement_id = rwio::read<std::string>(buf).value();
         _type = rwio::read<ts_datatype>(buf).value();
         _encoding = rwio::read<ts_encoding>(buf).value();

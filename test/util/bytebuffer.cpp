@@ -15,7 +15,6 @@
 #include <catch2/catch.hpp>
 
 #include <util/bytebuffer.h>
-#include <iostream>
 
 using namespace iotdb::util;
 

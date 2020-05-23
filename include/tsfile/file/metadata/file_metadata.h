@@ -34,47 +34,32 @@ namespace rwio = iotdb::util::rwio;
 namespace iotdb {
     namespace tsfile {
         namespace file {
-            class device_metadata_index {
-            public:
-                device_metadata_index(util::bytebuffer &buf) {
-
-                }
-            };
-
-            class measurement_schema {
-            public:
-                measurement_schema(util::bytebuffer &buf) {
-
-                }
-            };
-
-
             class file_metadata {
-                std::unordered_map<std::string, device_metadata_index> _device_map;
-                std::unordered_map<std::string, measurement_schema> _measurement_map;
+                std::unordered_map<std::string, metadata::device_metadata_index> _device_map;
+                std::unordered_map<std::string, metadata::measurement_schema> _measurement_map;
                 std::string _created_by;
                 int32_t _total_chunk_num;
                 int32_t _invalid_chunk_num;
                 std::unique_ptr<utils::bloom_filter> _bloom_filter;
 
             public:
-                explicit file_metadata(util::bytebuffer &buf) {
+                explicit file_metadata(util::buffer_window& buf) {
                     int32_t size;
 
-                    size = rwio::read<int32_t>(buf).value_or(-1);
+                    size = rwio::read<int32_t>(buf).value();
                     if (size > 0) {
                         for (int i = 0; i < size; ++i) {
                             std::string key = rwio::read<std::string>(buf).value_or("");
-                            device_metadata_index value(buf);
+                            metadata::device_metadata_index value(buf);
                             _device_map.insert({key, value});
                         }
                     }
 
-                    size = rwio::read<int32_t>(buf).value_or(-1);
+                    size = rwio::read<int32_t>(buf).value();
                     if (size > 0) {
                         for (int i = 0; i < size; ++i) {
                             std::string key = rwio::read<std::string>(buf).value_or("");
-                            measurement_schema value(buf);
+                            metadata::measurement_schema value(buf);
                             _measurement_map.insert({key, value});
                         }
                     }
@@ -83,19 +68,18 @@ namespace iotdb {
                         _created_by = rwio::read<std::string>(buf).value_or("");
                     }
 
-                    _total_chunk_num = rwio::read<int32_t>(buf).value_or(-1);
-                    _invalid_chunk_num = rwio::read<int32_t>(buf).value_or(-1);
+                    _total_chunk_num = rwio::read<int32_t>(buf).value();
+                    _invalid_chunk_num = rwio::read<int32_t>(buf).value();
 
                     // read bloom filter
-                    if (buf.is_readable()) {
-                        container_type bytes = rwio::read<container_type::value_type[]>(buf);
+                    if (buf.size() > 0) {
+                        util::buffer_window bytes = rwio::read<util::buffer_window>(buf).value();
                         int32_t filter_size = rwio::read<int32_t>(buf).value();
                         int32_t hash_function_size = rwio::read<int32_t>(buf).value();
                         _bloom_filter = std::make_unique<utils::bloom_filter>(bytes, filter_size, hash_function_size);
                     }
                 }
             };
-
         }
     }
 }

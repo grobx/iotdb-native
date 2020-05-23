@@ -49,17 +49,17 @@ public:
             load_metadata_size();
         }
     }
-    // here you have to handle any possibily error
+
     void load_metadata_size() {
         if (MAGIC_STRING == read_tail_magic()) {
             int read_size = MAGIC_STRING.size() + sizeof(int32_t);
             util::bytebuffer metadata_size(read_size);
             tsfile::pos_type offset = _tsfile_input.end() - std::streamoff(read_size);
             _tsfile_input.read(metadata_size, offset);
+            util::buffer_window metadata_size_win{metadata_size.begin(), metadata_size.end()};
             //metadataSize.flip();
-            _metadata_size = rwio::read<int32_t>(metadata_size).value_or(-1);
+            _metadata_size = rwio::read<int32_t>(metadata_size_win).value();
             _metadata_pos = offset - std::streamoff(_metadata_size) - _tsfile_input.beg();
-
         }
     }
 
@@ -114,7 +114,8 @@ public:
         if (_file_metadata == nullptr) {
             util::bytebuffer buf(_metadata_size);
             _tsfile_input.read(buf, _metadata_pos);
-            _file_metadata = std::make_shared<iotdb::tsfile::file::file_metadata>(buf);
+            util::buffer_window bwin{buf.begin(), buf.end()};
+            _file_metadata = std::make_shared<iotdb::tsfile::file::file_metadata>(bwin);
         }
         return _file_metadata;
     }

@@ -23,15 +23,16 @@
 #include <string>
 
 #include <tsfile/file/metadata/metadata.h>
-#include <util/bytebuffer.h>
 #include <util/bconv.h>
+#include <util/bytebuffer.h>
+#include <util/buffer_window.h>
 
 namespace iotdb { namespace util { namespace rwio {
 
 template<class Stream, class Tp = bool>
 struct impl {
     static std::optional<Tp> read(Stream& bstream) {
-        std::optional <container_type> res = bstream.read_n(sizeof(Tp));
+        std::optional <util::buffer_window> res = bstream.read_n(sizeof(Tp));
         if (!res) {
             return {};
         }
@@ -39,7 +40,7 @@ struct impl {
     }
 
     static size_t
-    write(const Tp& data, Stream& stream) {
+    write(const Tp& /*data*/, Stream& /*stream*/) {
         return 0;
     }
 };
@@ -48,7 +49,7 @@ template<class Stream>
 struct impl<Stream, std::string> {
     static std::optional<std::string> read(Stream& bstream) {
         int32_t len = impl<Stream, int32_t>::read(bstream).value_or(-1);
-        std::optional <container_type> res = bstream.read_n(len);
+        std::optional <util::buffer_window> res = bstream.read_n(len);
         if (!res) {
             return {};
         }
@@ -56,7 +57,20 @@ struct impl<Stream, std::string> {
     }
 
     static size_t
-    write(const std::string& data, Stream& stream) {
+    write(const std::string& /*data*/, Stream& /*stream*/) {
+        return 0;
+    }
+};
+
+template<class Stream>
+struct impl<Stream, util::buffer_window> {
+    static std::optional<util::buffer_window> read(Stream& bstream) {
+        int32_t len = impl<Stream, int32_t>::read(bstream).value_or(-1);
+        return bstream.read_n(len);
+    }
+
+    static size_t
+    write(const std::string& /*data*/, Stream& /*stream*/) {
         return 0;
     }
 };

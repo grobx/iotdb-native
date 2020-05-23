@@ -57,4 +57,8 @@ target_link_libraries(test04-bitset ${LINK_DEPENDENCIES}) # ${JNI_LIBRARIES})
 #target_include_directories(test04-bitset PUBLIC ${JNI_INCLUDE_DIRS})
 add_test("Should_BitSet_Work" test04-bitset)
 
+add_executable(test05-buffer_window util/buffer_window.cpp)
+target_link_libraries(test05-buffer_window ${LINK_DEPENDENCIES})
+add_test("Should_BufferWindow_Work" test05-buffer_window)
+
 include(CTest)
