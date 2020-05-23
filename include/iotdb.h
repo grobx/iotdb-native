@@ -19,7 +19,6 @@
 #ifndef IOTDB__H
 #define IOTDB__H
 
-#include <bit>
 #include <stdint.h>
 #include <vector>
 
