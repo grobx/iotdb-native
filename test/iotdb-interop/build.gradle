@@ -28,6 +28,19 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
+
+jar {
+doFirst {
+        manifest {
+                attributes 'Main-Class': 'iotdb.interop.App'
+
+        }
+        from {
+            configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+          }
+    }
+   //attributes 'Main-Class': 'iotdb.interop.App'
+}
 application {
     // Define the main class for the application.
     mainClassName = 'iotdb.interop.App'

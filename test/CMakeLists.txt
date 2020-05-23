@@ -32,7 +32,10 @@ else()
     #add_definitions(-fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer)
     set(LINK_DEPENDENCIES pthread catch_lib ) #  asan ubsan
 endif()
+add_custom_target(java_test ALL COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/build_java.sh VERBATIM)
+
 set(LINK_DEPENDENCIES ${LINK_DEPENDENCIES} iotdb)
+
 add_library(catch_lib catch.hpp tests-main.cpp)
 
 add_executable(test01-bytebuffer util/bytebuffer.cpp)
