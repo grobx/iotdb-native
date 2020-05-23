@@ -1,2 +1,4 @@
 build*/
 CMakeLists.txt.user
+/test/cmake_install.cmake
+/test/libcatch_lib.a

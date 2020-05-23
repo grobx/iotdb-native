@@ -109,7 +109,7 @@ public:
     encoding::endian_type endian_type() const {
         return _endian_type;
     }
-
+// FIXME: is here shared really needed?
     std::shared_ptr<iotdb::tsfile::file::file_metadata> read_file_metadata() {
         if (_file_metadata == nullptr) {
             util::bytebuffer buf(_metadata_size);
