@@ -27,9 +27,8 @@ SCENARIO( "push_bitset", "[bitset]" ) {
         std::bitset<64> expected(content);
         constexpr size_t size = expected.size();
 
-        WHEN( "you push this bitset<64> to a vector<bool>" ) {
-            util::bitset bits;
-            bits.push_bitset(expected);
+        WHEN( "you create a bitset with this bitset<64> only" ) {
+            util::bitset bits{{expected}};
 
             THEN ( "you got the right size" ) {
                 REQUIRE( bits.size() == size );
@@ -57,7 +56,7 @@ SCENARIO( "bitset", "[bitset]" ) {
 
         WHEN( "we create a bitset out of it" ) {
             util::buffer_window bw(bb.begin(), bb.end());
-            util::bitset bits(bw);
+            util::bitset bits = util::make_bitset(bw);
 
             THEN ( "there are "<<size<<" bits") {
                 REQUIRE( bits.size() == size );

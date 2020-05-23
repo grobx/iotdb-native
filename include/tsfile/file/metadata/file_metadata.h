@@ -76,7 +76,7 @@ namespace iotdb {
                         util::buffer_window bytes = rwio::read<util::buffer_window>(buf).value();
                         int32_t filter_size = rwio::read<int32_t>(buf).value();
                         int32_t hash_function_size = rwio::read<int32_t>(buf).value();
-                        _bloom_filter = std::make_unique<utils::bloom_filter>(bytes, filter_size, hash_function_size);
+                        utils::make_bloom_filter(bytes, filter_size, hash_function_size);
                     }
                 }
             };
