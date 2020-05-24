@@ -22,23 +22,31 @@
 #include <string>
 
 #include <iotdb.h>
+#include <util/buffer_window.h>
 
 namespace iotdb { namespace bconv {
 
 template<typename Tp>
-Tp to(container_type& bytes) {
-    Tp v;
-    std::copy(bytes.rbegin(), bytes.rend(), (uint8_t*) &v);
+Tp to(const util::buffer_window& bytes) {
+    Tp v = 0ULL;
+    if (iotdb::byte_order == bytes.order()) {
+        std::copy(bytes.begin(), bytes.end(),
+                  (util::buffer_window::value_type*) &v);
+    } else {
+        std::copy(bytes.rbegin(), bytes.rend(),
+                  (util::buffer_window::value_type*) &v);
+    }
     return v;
 }
 
 template<>
-bool to(container_type& bytes) {
-    return bytes[0] == 1u;
+bool to(const util::buffer_window& bytes) {
+    uint64_t x = static_cast<uint64_t>(bytes[0]);
+    return 1ULL == x;
 }
 
 template<>
-std::string to(container_type& bytes) {
+std::string to(const util::buffer_window& bytes) {
     return std::string(bytes.begin(), bytes.end());
 }
 
