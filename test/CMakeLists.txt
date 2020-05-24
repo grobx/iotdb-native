@@ -39,6 +39,8 @@ else()
     set(LINK_DEPENDENCIES ${LINK_DEPENDENCIES} pthread catch_lib) #  asan ubsan
 endif()
 
+add_custom_target(java_test ALL COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/build_java.sh VERBATIM)
+
 add_executable(test01-bytebuffer util/bytebuffer.cpp)
 target_link_libraries(test01-bytebuffer ${LINK_DEPENDENCIES})
 add_test("Should_Work_ByteBuffer" test01-bytebuffer)
