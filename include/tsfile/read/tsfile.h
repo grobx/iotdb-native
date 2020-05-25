@@ -39,7 +39,7 @@ private:
     pos_type _cur;
 
 public:
-    tsfile(std::filesystem::path path) {
+    explicit tsfile(const std::filesystem::path path) {
         _path = path;
         _file_input.open(_path.c_str());
         _beg = _file_input.tellg();
@@ -48,23 +48,23 @@ public:
         _file_input.seekg(0, _file_input.beg);
     }
 
-    pos_type beg() {
+    pos_type beg() const {
         return _beg;
     }
 
-    pos_type end() {
+    pos_type end() const {
         return _end;
     }
 
-    pos_type cur() {
+    pos_type cur() const {
         return _cur;
     }
 
-    size_t size() {
+    size_t size() const {
         return _end - _beg;
     }
 
-    void pos(pos_type pos) {
+    void pos(const pos_type pos) {
         _file_input.seekg(pos);
     }
 
@@ -72,10 +72,10 @@ public:
         _file_input.read(&buf[0], buf.size());
     }
 
-    void read(util::bytebuffer& buf, pos_type position) {
+    void read(util::bytebuffer& buf, const pos_type position) {
         pos_type cur = _file_input.tellg();
         _file_input.seekg(position);
-        _file_input.read(&buf[0], buf.size());
+        read(buf);
         _file_input.seekg(cur);
     }
 };

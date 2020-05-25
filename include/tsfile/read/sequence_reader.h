@@ -20,6 +20,7 @@
 #define IOTDB__TSFILE__READ__SEQUENCE_READER__H
 
 #include <filesystem>
+#include <optional>
 
 #include <util/bytebuffer.h>
 #include <util/rwio.h>
@@ -37,29 +38,29 @@ class sequence_reader {
     int32_t _metadata_size;
     std::size_t _metadata_pos;
     encoding::endian_type _endian_type = encoding::endian_type::IOTDB_BIG_ENDIAN;
-    std::shared_ptr<iotdb::tsfile::file::file_metadata> _file_metadata;
+    std::optional<iotdb::tsfile::file::file_metadata> _file_metadata;
 
 public:
-    explicit sequence_reader(std::filesystem::path path): sequence_reader(path, true) {}
+    explicit sequence_reader(const std::filesystem::path path): sequence_reader(path, true) {}
 
-    explicit sequence_reader(std::filesystem::path path, bool load_metadata_size_): _tsfile_input{path} {
+    explicit sequence_reader(const std::filesystem::path path, const bool load_metadata_size_): _tsfile_input{path} {
         _metadata_size = -1;
         _metadata_pos = -1;
         if (load_metadata_size_) {
             load_metadata_size();
         }
     }
-    // here you have to handle any possibily error
+
     void load_metadata_size() {
         if (MAGIC_STRING == read_tail_magic()) {
             int read_size = MAGIC_STRING.size() + sizeof(int32_t);
             util::bytebuffer metadata_size(read_size);
             tsfile::pos_type offset = _tsfile_input.end() - std::streamoff(read_size);
             _tsfile_input.read(metadata_size, offset);
+            util::buffer_window metadata_size_win{metadata_size};
             //metadataSize.flip();
-            _metadata_size = rwio::read<int32_t>(metadata_size).value_or(-1);
+            _metadata_size = rwio::read<int32_t>(metadata_size_win).value();
             _metadata_pos = offset - std::streamoff(_metadata_size) - _tsfile_input.beg();
-
         }
     }
 
@@ -100,7 +101,7 @@ public:
         return _metadata_pos;
     }
 
-    bool is_complete()  {
+    bool is_complete() {
         return
             _tsfile_input.size() >= MAGIC_STRING.size()*2 + VERSION_NUMBER.size() &&
             read_tail_magic() == read_head_magic();
@@ -110,13 +111,14 @@ public:
         return _endian_type;
     }
 
-    std::shared_ptr<iotdb::tsfile::file::file_metadata> read_file_metadata() {
-        if (_file_metadata == nullptr) {
+    const iotdb::tsfile::file::file_metadata& read_file_metadata() {
+        if (!_file_metadata) {
             util::bytebuffer buf(_metadata_size);
             _tsfile_input.read(buf, _metadata_pos);
-            _file_metadata = std::make_shared<iotdb::tsfile::file::file_metadata>(buf);
+            util::buffer_window bwin{buf};
+            _file_metadata = iotdb::tsfile::file::file_metadata(bwin);
         }
-        return _file_metadata;
+        return _file_metadata.value();
     }
 };
 

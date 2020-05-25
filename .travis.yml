@@ -42,6 +42,11 @@ before_install:
     - eval "${MATRIX_EVAL}"
 
 before_script:
+  - git clone https://github.com/catchorg/Catch2.git
+  - cd Catch2
+  - cmake -Bbuild -H. -DBUILD_TESTING=OFF
+  - sudo /usr/local/cmake-3.12.4/bin/cmake --build build/ --target install
+  - cd ..
   - mkdir build
   - cd build
   - cmake ..

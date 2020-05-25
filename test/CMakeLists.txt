@@ -16,24 +16,30 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-#find_package(JNI)
 
+set(LINK_DEPENDENCIES iotdb)
+
+find_package(JNI)
 if (JNI_FOUND)
     message (STATUS "JNI_INCLUDE_DIRS=${JNI_INCLUDE_DIRS}")
     message (STATUS "JNI_LIBRARIES=${JNI_LIBRARIES}")
 endif()
 
+find_package(Catch2 REQUIRED)
+add_library(catch_lib tests-main.cpp)
+target_link_libraries(catch_lib Catch2::Catch2)
+
 if(WIN32)
     # we support just windows 10
-    set(LINK_DEPENDENCIES catch_lib)
+    set(LINK_DEPENDENCIES ${LINK_DEPENDENCIES} catch_lib)
     add_definitions(-D_WIN32_WINNT=0x0A00)
 else()
     add_definitions(-Wall -Wextra -pedantic)
     #add_definitions(-fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer)
-    set(LINK_DEPENDENCIES pthread catch_lib ) #  asan ubsan
+    set(LINK_DEPENDENCIES ${LINK_DEPENDENCIES} pthread catch_lib) #  asan ubsan
 endif()
-set(LINK_DEPENDENCIES ${LINK_DEPENDENCIES} iotdb)
-add_library(catch_lib catch.hpp tests-main.cpp)
+
+add_custom_target(java_test ALL COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/build_java.sh VERBATIM)
 
 add_executable(test01-bytebuffer util/bytebuffer.cpp)
 target_link_libraries(test01-bytebuffer ${LINK_DEPENDENCIES})
@@ -50,7 +56,11 @@ configure_file("TsFileSequenceReaderTest.tsfile" "TsFileSequenceReaderTest.tsfil
 
 add_executable(test04-bitset util/bitset.cpp)
 target_link_libraries(test04-bitset ${LINK_DEPENDENCIES}) # ${JNI_LIBRARIES})
-target_include_directories(test04-bitset PUBLIC ${JNI_INCLUDE_DIRS})
+#target_include_directories(test04-bitset PUBLIC ${JNI_INCLUDE_DIRS})
 add_test("Should_BitSet_Work" test04-bitset)
+
+add_executable(test05-buffer_window util/buffer_window.cpp)
+target_link_libraries(test05-buffer_window ${LINK_DEPENDENCIES})
+add_test("Should_BufferWindow_Work" test05-buffer_window)
 
 include(CTest)

@@ -12,9 +12,9 @@
 * limitations under the License.
 **/
 
-#include "../catch.hpp"
+#include <catch2/catch.hpp>
 
-#include "util/bitset.h"
+#include <util/bitset.h>
 //#include "java_executor.h"
 
 using namespace iotdb;
@@ -27,9 +27,8 @@ SCENARIO( "push_bitset", "[bitset]" ) {
         std::bitset<64> expected(content);
         constexpr size_t size = expected.size();
 
-        WHEN( "you push this bitset<64> to a vector<bool>" ) {
-            std::vector<bool> bits;
-            iotdb::util::bitset::push_bitset(bits, expected);
+        WHEN( "you create a bitset with this bitset<64> only" ) {
+            util::bitset bits{{expected}};
 
             THEN ( "you got the right size" ) {
                 REQUIRE( bits.size() == size );
@@ -53,18 +52,19 @@ SCENARIO( "bitset", "[bitset]" ) {
     constexpr size_t size = 2 * 64;
 
     GIVEN( "these sequence of bytes" ) {
-        util::bytebuffer bytes(contents);
+        util::bytebuffer bb(contents);
 
         WHEN( "we create a bitset out of it" ) {
-            util::bitset bits(std::move(bytes));
+            util::buffer_window bw(bb);
+            util::bitset bits = util::make_bitset(bw);
 
             THEN ( "there are "<<size<<" bits") {
                 REQUIRE( bits.size() == size );
                 std::bitset<size> x(
-                            "11101000" "11001000" "01001000" "10001000"
                             "00001000" "00001000" "00001000" "00001000"
+                            "10001000" "01001000" "11001000" "11101000"
+                            "00001000" "00001000" "00000000" "00000000"
                             "00000000" "00000000" "00000000" "00000000"
-                            "00000000" "00000000" "00001000" "00001000"
                             );
                 std::basic_string<int> rs = x.to_string(0, 1);
 
