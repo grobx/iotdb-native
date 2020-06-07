@@ -4,6 +4,7 @@
 namespace iotdb {
     namespace tsfile {
         namespace file {
+            namespace metadata {
                 /**
                  *
                  * @param measurementUid
@@ -46,4 +47,5 @@ namespace iotdb {
                  */
             }
         }
+    }
 }

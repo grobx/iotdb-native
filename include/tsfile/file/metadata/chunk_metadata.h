@@ -23,7 +23,6 @@
 #include <cstdint>
 #include <system_error>
 #include <iostream>
-#include <tsfile/file/metadata/chunk_metadata.h>
 #include <tsfile/file/metadata/metadata.h>
 #include <tsfile/file/metadata/statistics.h>
 
@@ -31,6 +30,7 @@
 namespace iotdb {
     namespace tsfile {
         namespace file {
+            namespace metadata {
                 class chunk_metadata {
                 public:
                     /**
@@ -88,5 +88,6 @@ namespace iotdb {
 
             };
         }
+    }
 }
 #endif //IOTDB_NATIVE_CHUNK_METADATA_H

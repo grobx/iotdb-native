@@ -50,6 +50,8 @@ class bloom_filter {
     funcs_type fns;
 
 public:
+    explicit bloom_filter() {}
+
     explicit bloom_filter(util::bitset && bitset, int32_t function_size, int32_t hash_function_size)
         : bs{bitset}
         , sz{function_size}
@@ -61,10 +63,11 @@ public:
     }
 };
 
-inline bloom_filter make_bloom_filter(util::buffer_window& buffer_window,
-                                      int32_t function_size,
-                                      int32_t hash_function_size) noexcept {
-    return bloom_filter{util::make_bitset(buffer_window), function_size, hash_function_size};
+inline bloom_filter make_bloom_filter(util::buffer_window& buf) noexcept {
+    util::buffer_window bytes = rwio::read<util::buffer_window>(buf).value();
+    int32_t function_size = rwio::read<int32_t>(buf).value();
+    int32_t hash_function_size = rwio::read<int32_t>(buf).value();
+    return bloom_filter{util::make_bitset(bytes), function_size, hash_function_size};
 }
 
 }}}

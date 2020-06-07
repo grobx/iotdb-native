@@ -34,52 +34,79 @@ namespace rwio = iotdb::util::rwio;
 namespace iotdb {
     namespace tsfile {
         namespace file {
+            namespace metadata{
+            using device_map = std::unordered_map<std::string, metadata::device_metadata_index>;
+            using measurement_map = std::unordered_map<std::string, metadata::measurement_schema>;
+
             class file_metadata {
-                std::unordered_map<std::string, metadata::device_metadata_index> _device_map;
-                std::unordered_map<std::string, metadata::measurement_schema> _measurement_map;
+                device_map _device_map;
+                measurement_map _measurement_map;
                 std::string _created_by;
                 int32_t _total_chunk_num;
                 int32_t _invalid_chunk_num;
-                std::unique_ptr<utils::bloom_filter> _bloom_filter;
+                utils::bloom_filter _bloom_filter;
 
             public:
-                explicit file_metadata(util::buffer_window& buf) {
-                    int32_t size;
+                explicit file_metadata(device_map device_map, measurement_map measurement_map
+                                       , std::string created_by, int32_t total_chunk_num
+                                       , int32_t invalid_chunk_num, utils::bloom_filter bloom_filter)
+                    : _device_map{device_map}, _measurement_map{measurement_map}, _created_by{created_by}
+                    , _total_chunk_num{total_chunk_num}, _invalid_chunk_num{invalid_chunk_num}
+                    , _bloom_filter{bloom_filter}
+                {}
+            };
 
-                    size = rwio::read<int32_t>(buf).value();
-                    if (size > 0) {
-                        for (int i = 0; i < size; ++i) {
-                            std::string key = rwio::read<std::string>(buf).value_or("");
-                            metadata::device_metadata_index value(buf);
-                            _device_map.insert({key, value});
-                        }
-                    }
-
-                    size = rwio::read<int32_t>(buf).value();
-                    if (size > 0) {
-                        for (int i = 0; i < size; ++i) {
-                            std::string key = rwio::read<std::string>(buf).value_or("");
-                            metadata::measurement_schema value(buf);
-                            _measurement_map.insert({key, value});
-                        }
-                    }
-
-                    if (rwio::read<bool>(buf) == true) {
-                        _created_by = rwio::read<std::string>(buf).value_or("");
-                    }
-
-                    _total_chunk_num = rwio::read<int32_t>(buf).value();
-                    _invalid_chunk_num = rwio::read<int32_t>(buf).value();
-
-                    // read bloom filter
-                    if (buf.size() > 0) {
-                        util::buffer_window bytes = rwio::read<util::buffer_window>(buf).value();
-                        int32_t filter_size = rwio::read<int32_t>(buf).value();
-                        int32_t hash_function_size = rwio::read<int32_t>(buf).value();
-                        utils::make_bloom_filter(bytes, filter_size, hash_function_size);
+            device_map make_device_map(util::buffer_window& buf) {
+                device_map m;
+                int32_t size = rwio::read<int32_t>(buf).value();
+                if (size > 0) {
+                    for (int i = 0; i < size; ++i) {
+                        std::string key = rwio::read<std::string>(buf).value_or("");
+                        metadata::device_metadata_index value(buf);
+                        m.insert({key, value});
                     }
                 }
-            };
+                return m;
+            }
+
+            measurement_map make_measurement_map(util::buffer_window& buf) {
+                measurement_map m;
+                int32_t size = rwio::read<int32_t>(buf).value();
+                if (size > 0) {
+                    for (int i = 0; i < size; ++i) {
+                        std::string key = rwio::read<std::string>(buf).value_or("");
+                        metadata::measurement_schema value(buf);
+                        m.insert({key, value});
+                    }
+                }
+                return m;
+            }
+
+            file_metadata make_file_metadata(util::buffer_window& buf) {
+                device_map device_map = make_device_map(buf);
+                measurement_map measurement_map = make_measurement_map(buf);
+                std::string created_by;
+                int32_t total_chunk_num;
+                int32_t invalid_chunk_num;
+                utils::bloom_filter bloom_filter;
+
+                if (rwio::read<bool>(buf) == true) {
+                    created_by = rwio::read<std::string>(buf).value_or("");
+                }
+
+                total_chunk_num = rwio::read<int32_t>(buf).value();
+                invalid_chunk_num = rwio::read<int32_t>(buf).value();
+
+                // read bloom filter
+                if (buf.size() > 0) {
+                    bloom_filter = utils::make_bloom_filter(buf);
+                }
+
+                return file_metadata{device_map, measurement_map, created_by
+                            , total_chunk_num, invalid_chunk_num, bloom_filter};
+            }
+
+            }
         }
     }
 }

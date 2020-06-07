@@ -37,6 +37,8 @@ class bitset: public std::vector<bool> {
     }
 
 public:
+    explicit bitset() {}
+
     explicit bitset(const std::vector<std::bitset<64>> & words) {
         for (const std::bitset<64>& w : words) {
             push_bitset(w);
